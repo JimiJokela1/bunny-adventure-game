@@ -19,8 +19,16 @@ public class PlayerController : MonoBehaviour {
 	Vector3 firstMidDestination;
 	Vector3 secondMidDestination;
 	Vector3 finalDestination;
+
 //	Vector3 startLocation;
 	float progress = 0;
+	float movementSpeed = 1;
+	Vector3 randomAcceleration;
+	Vector3 movement = Vector3.zero;
+
+	float derailTimer = 0;
+	float randomDerailTime = 0;
+
 
 	void Start () {
 		rigidBody = GetComponent<Rigidbody> ();
@@ -40,10 +48,70 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	void FixedUpdate () {
-		Moving ();
+		Moving2 ();
 
 	}
 
+	// Check if clicked on map
+	void HandleControls () {
+		if (Input.GetAxis ("Action1") > 0.1f) {
+			if (controlCooldown == false && moving == false) {
+				Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
+				RaycastHit hit;
+				if (Physics.Raycast (ray, out hit, 100f, LayerMask.GetMask ("FloorLayer"))) {
+					Debug.Log ("generating path");
+					Vector3 destination = hit.point;
+					GeneratePath3 (destination);
+					controlCooldown = true;
+				}
+			}
+		}
+	}
+
+	void Move (Vector3 movement) {
+		rigidBody.MovePosition (transform.position + movement);
+	}
+
+	// Movement
+	void Moving2() {
+		if (moving) {
+			Move (movement);
+
+			movement = Vector3.ClampMagnitude (finalDestination - transform.position, 1);
+			movement += randomAcceleration;
+			movement = Vector3.ClampMagnitude (movement, movementSpeed * Time.fixedDeltaTime);
+
+			randomDerailTime = Random.Range (0.1f, 1f);
+
+			if (derailTimer < randomDerailTime) {
+				derailTimer += Time.fixedDeltaTime;
+			} else {
+				randomAcceleration = Vector3.ClampMagnitude (new Vector3 (Random.Range (-1f, 1f), 0, Random.Range (-1f, 1f)), 1);
+				derailTimer = 0;
+				randomDerailTime = Random.Range (0.1f, 1f);
+			}
+
+			if (Vector3.Distance(transform.position, finalDestination) < 0.6f){
+				moving = false;
+				Debug.Log ("stopped");
+			}
+		}
+	}
+
+	// Start moving
+	void GeneratePath3 (Vector3 destination){
+		randomAcceleration = Vector3.ClampMagnitude(new Vector3 (Random.Range (-1f, 1f), 0, Random.Range (-1f, 1f)), 1);
+		finalDestination = destination;
+		moving = true;
+	}
+
+
+
+
+
+
+
+	// OOOOOOLD
 	void Moving () {
 		if (moving) {
 			Move (stepDestination);
@@ -63,25 +131,6 @@ public class PlayerController : MonoBehaviour {
 
 			//			Debug.Log ("step");
 		}
-	}
-
-	void HandleControls () {
-		if (Input.GetAxis ("Action1") > 0.1f) {
-			if (controlCooldown == false && moving == false) {
-				Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
-				RaycastHit hit;
-				if (Physics.Raycast (ray, out hit, 100f, LayerMask.GetMask ("FloorLayer"))) {
-					Debug.Log ("generating path");
-					Vector3 destination = hit.point;
-					GeneratePath2 (destination);
-					controlCooldown = true;
-				}
-			}
-		}
-	}
-
-	void Move (Vector3 movement) {
-		rigidBody.MovePosition (transform.position + movement);
 	}
 
 	void GeneratePath (Vector3 destination) {
