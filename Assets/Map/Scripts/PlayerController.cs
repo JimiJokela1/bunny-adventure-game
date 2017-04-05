@@ -9,26 +9,15 @@ public class PlayerController : MonoBehaviour {
 	bool controlCooldown = false;
 	float controlCooldownTimer;
 	float controlCooldownTime = 1.0f;
-
 	bool moving = false;
 
-	float distanceToTarget;
-	int pathDetail;
-	public float stepLenght;
-	Vector3 stepDestination;
-	Vector3 firstMidDestination;
-	Vector3 secondMidDestination;
-	Vector3 finalDestination;
-
-//	Vector3 startLocation;
-	float progress = 0;
 	float movementSpeed = 1;
 	Vector3 randomAcceleration;
 	Vector3 movement = Vector3.zero;
+	Vector3 finalDestination;
 
 	float derailTimer = 0;
 	float randomDerailTime = 0;
-
 
 	void Start () {
 		rigidBody = GetComponent<Rigidbody> ();
@@ -49,7 +38,6 @@ public class PlayerController : MonoBehaviour {
 
 	void FixedUpdate () {
 		Moving2 ();
-
 	}
 
 	// Check if clicked on map
@@ -66,6 +54,14 @@ public class PlayerController : MonoBehaviour {
 				}
 			}
 		}
+	}
+
+	// Start moving
+	void GeneratePath3 (Vector3 destination){
+		randomAcceleration = Vector3.ClampMagnitude(new Vector3 (Random.Range (-1f, 1f), 0, Random.Range (-1f, 1f)), 1);
+		finalDestination = destination;
+		moving = true;
+		randomDerailTime = Random.Range (0.1f, 1f);
 	}
 
 	void Move (Vector3 movement) {
@@ -96,13 +92,7 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 
-	// Start moving
-	void GeneratePath3 (Vector3 destination){
-		randomAcceleration = Vector3.ClampMagnitude(new Vector3 (Random.Range (-1f, 1f), 0, Random.Range (-1f, 1f)), 1);
-		finalDestination = destination;
-		moving = true;
-		randomDerailTime = Random.Range (0.1f, 1f);
-	}
+
 
 
 
@@ -111,6 +101,15 @@ public class PlayerController : MonoBehaviour {
 
 
 	// OOOOOOLD
+	float progress = 0;
+	float distanceToTarget;
+	int pathDetail;
+	public float stepLenght;
+	Vector3 stepDestination;
+	Vector3 firstMidDestination;
+	Vector3 secondMidDestination;
+	//	Vector3 startLocation;
+
 	void Moving () {
 		if (moving) {
 			Move (stepDestination);
