@@ -5,19 +5,36 @@ using UnityEngine.UI;
 
 public class MapGenerator : MonoBehaviour {
 
-	public GameObject tileSand1;
-	public GameObject tileSand2;
-	public GameObject tileWater1;
-	public GameObject tileMountain1;
+	GameObject tileSand1;
+	GameObject tileSand2;
+	GameObject tileWater1;
+	GameObject tileMountain1;
 	public int levelSize = 10;
 	public GameObject[,] tilemap;
 	List<GameObject> tileTypeList;
+	Transform tileHolder;
 
-	Button generateButton;
+	Button generateButton; // for testing
 
-	void Start () {
+	// Instance for singleton class, meaning there is only one of this object ever
+	public static MapGenerator Instance = null;
+	void Awake () {
+		if (Instance == null) {
+			Instance = this;
+			DontDestroyOnLoad (this);
+		} else if (Instance != this) {
+			Destroy (gameObject);
+		}
+	
 		generateButton = GameObject.Find ("GenerateButton").GetComponent<Button> ();
 		generateButton.onClick.AddListener (onGenerateButtonClick);
+
+		tileHolder = GameObject.FindGameObjectWithTag ("TileHolder").transform;
+
+		tileSand1 = Resources.Load ("Tile_sand1") as GameObject;
+		tileSand2 = Resources.Load ("Tile_sand2") as GameObject;
+		tileWater1 = Resources.Load ("Tile_water1") as GameObject;
+		tileMountain1 = Resources.Load ("Tile_mountain1") as GameObject;
 
 		tilemap = new GameObject[levelSize, levelSize];
 		tileTypeList = new List<GameObject> ();
@@ -25,13 +42,10 @@ public class MapGenerator : MonoBehaviour {
 		tileTypeList.Add (tileSand2);
 		tileTypeList.Add (tileWater1);
 		tileTypeList.Add (tileMountain1);
-
-		GenerateRegionMap ();
-
 	}
 
 
-	void GenerateRegionMap () {
+	public void GenerateMap () {
 		foreach (GameObject tile in tilemap) {
 			Destroy (tile);
 		}
@@ -42,11 +56,11 @@ public class MapGenerator : MonoBehaviour {
 		for (int w = 0; w < levelSize; w++) {
 			for (int h = 0; h < levelSize; h++) {
 				if (location.x < startAreaSize && location.x > -startAreaSize && location.z < startAreaSize && location.z > -startAreaSize) {
-					tilemap [w, h] = Instantiate (tileTypeList [Random.Range (0, 2)], location, Quaternion.Euler (90, 0, 0));
+					tilemap [w, h] = Instantiate (tileTypeList [Random.Range (0, 2)], location, Quaternion.Euler (90, 0, 0), tileHolder);
 				} else if ((location.x > 40 || location.x < -40) || (location.z > 40 || location.z < -40)) {
-					tilemap [w, h] = Instantiate (tileTypeList [2], location, Quaternion.Euler (90, 0, 0));
+					tilemap [w, h] = Instantiate (tileTypeList [2], location, Quaternion.Euler (90, 0, 0), tileHolder);
 				} else {
-					tilemap [w, h] = Instantiate (tileTypeList [Random.Range (0, 4)], location, Quaternion.Euler (90, 0, 0));
+					tilemap [w, h] = Instantiate (tileTypeList [Random.Range (0, 4)], location, Quaternion.Euler (90, 0, 0), tileHolder);
 
 				}
 				location += new Vector3 (1, 0, 0);
@@ -97,24 +111,24 @@ public class MapGenerator : MonoBehaviour {
 
 				if (mountainTiles > 4) {
 					Destroy (tilemap [w, h]);
-					tilemap [w, h] = Instantiate (tileTypeList [3], temp, Quaternion.Euler (90, 0, 0));
+					tilemap [w, h] = Instantiate (tileTypeList [3], temp, Quaternion.Euler (90, 0, 0), tileHolder);
 				} else if (waterTiles > 4) {
 					Destroy (tilemap [w, h]);
-					tilemap [w, h] = Instantiate (tileTypeList [2], temp, Quaternion.Euler (90, 0, 0));
+					tilemap [w, h] = Instantiate (tileTypeList [2], temp, Quaternion.Euler (90, 0, 0), tileHolder);
 				} else if (land1Tiles > 4) {
 					Destroy (tilemap [w, h]);
-					tilemap [w, h] = Instantiate (tileTypeList [0], temp, Quaternion.Euler (90, 0, 0));
+					tilemap [w, h] = Instantiate (tileTypeList [0], temp, Quaternion.Euler (90, 0, 0), tileHolder);
 				} else if (land2Tiles > 4) {
 					Destroy (tilemap [w, h]);
-					tilemap [w, h] = Instantiate (tileTypeList [1], temp, Quaternion.Euler (90, 0, 0));
+					tilemap [w, h] = Instantiate (tileTypeList [1], temp, Quaternion.Euler (90, 0, 0), tileHolder);
 				} else if (tilemap [w, h].tag == "tile_water" && waterTiles < 4) {
 					Destroy (tilemap [w, h]);
 					if (land1Tiles > land2Tiles && land1Tiles > mountainTiles) {
-						tilemap [w, h] = Instantiate (tileTypeList [0], temp, Quaternion.Euler (90, 0, 0));
+						tilemap [w, h] = Instantiate (tileTypeList [0], temp, Quaternion.Euler (90, 0, 0), tileHolder);
 					} else if (land2Tiles > land1Tiles && land2Tiles > mountainTiles) {
-						tilemap [w, h] = Instantiate (tileTypeList [1], temp, Quaternion.Euler (90, 0, 0));
+						tilemap [w, h] = Instantiate (tileTypeList [1], temp, Quaternion.Euler (90, 0, 0), tileHolder);
 					} else {
-						tilemap [w, h] = Instantiate (tileTypeList [3], temp, Quaternion.Euler (90, 0, 0));
+						tilemap [w, h] = Instantiate (tileTypeList [3], temp, Quaternion.Euler (90, 0, 0), tileHolder);
 					}
 				}
 			}
@@ -122,11 +136,11 @@ public class MapGenerator : MonoBehaviour {
 	}
 
 	public void onGenerateButtonClick () {
-		GenerateRegionMap ();
+		GenerateMap ();
 	}
 
 	// Old
-	void GenerateMap () {
+	void GenerateMapBasic () {
 		Vector3 location = new Vector3 (-levelSize / 2 + 0.5f, 0, -levelSize / 2 + 0.5f);
 		for (int w = 0; w < levelSize; w++) {
 			for (int h = 0; h < levelSize; h++) {

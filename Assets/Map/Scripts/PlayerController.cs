@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-public class PlayerController : MonoBehaviour {
+public class PlayerController : MonoBehaviour{
 
 	Rigidbody rigidBody;
 	bool controlCooldown = false;
@@ -73,8 +74,8 @@ public class PlayerController : MonoBehaviour {
 		if (moving) {
 			Move (movement);
 
-			movement += Vector3.ClampMagnitude (finalDestination - transform.position, movementSpeed * Time.fixedDeltaTime);
-			movement += Vector3.ClampMagnitude (randomAcceleration, movementSpeed * Time.fixedDeltaTime);
+			movement += Vector3.ClampMagnitude (finalDestination - transform.position, movementSpeed * Time.fixedDeltaTime / 30);
+			movement += Vector3.ClampMagnitude (randomAcceleration, movementSpeed * Time.fixedDeltaTime / 30);
 			movement = Vector3.ClampMagnitude (movement, movementSpeed * Time.fixedDeltaTime);
 
 			if (derailTimer < randomDerailTime) {
@@ -82,7 +83,7 @@ public class PlayerController : MonoBehaviour {
 			} else {
 				randomAcceleration = Vector3.ClampMagnitude (new Vector3 (Random.Range (-1f, 1f), 0, Random.Range (-1f, 1f)), 1);
 				derailTimer = 0;
-				randomDerailTime = Random.Range (1f, 2f);
+				randomDerailTime = Random.Range (0.2f, 1f);
 			}
 
 			if (Vector3.Distance(transform.position, finalDestination) < 0.6f){
@@ -99,7 +100,7 @@ public class PlayerController : MonoBehaviour {
 
 
 
-
+	//------------------------------------------------------------
 	// OOOOOOLD
 	float progress = 0;
 	float distanceToTarget;
