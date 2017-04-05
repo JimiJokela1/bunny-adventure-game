@@ -77,18 +77,16 @@ public class PlayerController : MonoBehaviour {
 		if (moving) {
 			Move (movement);
 
-			movement = Vector3.ClampMagnitude (finalDestination - transform.position, 1);
-			movement += randomAcceleration;
+			movement += Vector3.ClampMagnitude (finalDestination - transform.position, movementSpeed * Time.fixedDeltaTime);
+			movement += Vector3.ClampMagnitude (randomAcceleration, movementSpeed * Time.fixedDeltaTime);
 			movement = Vector3.ClampMagnitude (movement, movementSpeed * Time.fixedDeltaTime);
-
-			randomDerailTime = Random.Range (0.1f, 1f);
 
 			if (derailTimer < randomDerailTime) {
 				derailTimer += Time.fixedDeltaTime;
 			} else {
 				randomAcceleration = Vector3.ClampMagnitude (new Vector3 (Random.Range (-1f, 1f), 0, Random.Range (-1f, 1f)), 1);
 				derailTimer = 0;
-				randomDerailTime = Random.Range (0.1f, 1f);
+				randomDerailTime = Random.Range (1f, 2f);
 			}
 
 			if (Vector3.Distance(transform.position, finalDestination) < 0.6f){
@@ -103,6 +101,7 @@ public class PlayerController : MonoBehaviour {
 		randomAcceleration = Vector3.ClampMagnitude(new Vector3 (Random.Range (-1f, 1f), 0, Random.Range (-1f, 1f)), 1);
 		finalDestination = destination;
 		moving = true;
+		randomDerailTime = Random.Range (0.1f, 1f);
 	}
 
 
