@@ -9,6 +9,7 @@ public class MapGenerator : MonoBehaviour {
 	GameObject tileSand2;
 	GameObject tileWater1;
 	GameObject tileMountain1;
+	GameObject spriteMountain1;
 	public int levelSize = 10;
 	public GameObject[,] tilemap;
 	List<GameObject> tileTypeList;
@@ -25,6 +26,8 @@ public class MapGenerator : MonoBehaviour {
 		}
 	
 		tileHolder = GameObject.FindGameObjectWithTag ("TileHolder").transform;
+
+		spriteMountain1 = Resources.Load ("Prefabs/sprite_mountain1") as GameObject;
 
 		tileSand1 = Resources.Load ("Prefabs/Tile_sand1") as GameObject;
 		tileSand2 = Resources.Load ("Prefabs/Tile_sand2") as GameObject;
@@ -57,6 +60,7 @@ public class MapGenerator : MonoBehaviour {
 					tilemap [w, h] = Instantiate (tileTypeList [Random.Range (0, 4)], location, Quaternion.Euler (90, 0, 0), tileHolder);
 
 				}
+
 				location += new Vector3 (1, 0, 0);
 			}
 			location = new Vector3 (-levelSize / 2 + 0.5f, 0, location.z);
@@ -64,6 +68,7 @@ public class MapGenerator : MonoBehaviour {
 
 		}
 		Smoothing ();
+		PlaceSprites ();
 	}
 
 	// Looks at each tile and it's neighbours and if lots of one tile type surrounds the tile, changes to that tile type
@@ -124,6 +129,18 @@ public class MapGenerator : MonoBehaviour {
 					} else {
 						tilemap [w, h] = Instantiate (tileTypeList [3], temp, Quaternion.Euler (90, 0, 0), tileHolder);
 					}
+				}
+			}
+		}
+	}
+
+	void PlaceSprites(){
+		for (int w = 1; w < tilemap.GetLength (0) - 1; w++) {
+			for (int h = 1; h < tilemap.GetLength (1) - 1; h++) {
+				if (tilemap [w, h].tag == "tile_mountain") {
+					Vector3 location = new Vector3 (tilemap [w, h].transform.position.x, 0, tilemap [w, h].transform.position.z + Random.Range (-0.4f, 0.4f));
+					GameObject tempMountain = Instantiate (spriteMountain1, location, Quaternion.identity, tileHolder);
+					tempMountain.transform.localScale = new Vector3 (Random.Range (1, 4), Random.Range (2, 4), 0);
 				}
 			}
 		}

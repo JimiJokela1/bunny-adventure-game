@@ -17,8 +17,11 @@ public class PlayerController : MonoBehaviour {
 
 	MapPlayer mapPlayer;
 
+	List<string> inventory;
+
 	void Start(){
 		mapPlayer = gameObject.GetComponent<MapPlayer> ();
+		inventory = new List<string> ();
 	}
 
 	void Update(){
@@ -29,7 +32,7 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 
-	void FixedUpdate(){
-
+	public void AddToInv(string itemName){
+		inventory.Add (itemName);
 	}
 }

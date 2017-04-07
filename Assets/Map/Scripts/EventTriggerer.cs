@@ -14,7 +14,10 @@ public class EventTriggerer : MonoBehaviour {
 	float randomEventChance = 1f;
 	int tileMask;
 
-	float triggerTimer;
+	float randomEventTimer = 0f;
+	float randomEventTime = 1f;
+
+	float triggerTimer = 0f;
 	float triggerTime = 3f;
 	bool triggered = false;
 
@@ -37,13 +40,22 @@ public class EventTriggerer : MonoBehaviour {
 	}
 
 	void FixedUpdate () {
-//		if (Random.Range (0f, 100f) < randomEventChance) {
-//			RaycastHit hit;
-//			if (Physics.Raycast (player.transform.position, Vector3.down, out hit, 100f, tileMask)) {
-//				tileType = hit.collider.tag;
-//				GameController.Instance.ChangeGameState (GameController.GAMESTATE_EVENT);
-//			}
-//		}
+		if (!player.GetComponent<MapPlayer> ().moving) {
+			if (randomEventTimer > randomEventTime) {
+
+				if (Random.Range (0f, 100f) < randomEventChance) {
+					RaycastHit hit;
+					if (Physics.Raycast (player.transform.position, Vector3.down, out hit, 100f, tileMask)) {
+						tileType = hit.collider.tag;
+						GameController.Instance.ChangeGameState (GameController.GAMESTATE_EVENT);
+					}
+				}
+				randomEventTimer = 0f;
+			} else {
+				randomEventTimer += Time.fixedDeltaTime;
+			}
+		}
+
 	}
 
 	public void TriggerEvent() {
