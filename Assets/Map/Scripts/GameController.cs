@@ -26,6 +26,8 @@ public class GameController : MonoBehaviour {
 	public string eventTileType;
 	GameObject player;
 
+	public List<GameObject> mapCanvasObjects;
+	public int oldGameState;
 	Button generateButton; // for testing
 	Button eventTestButton;
 
@@ -36,11 +38,16 @@ public class GameController : MonoBehaviour {
 		eventTestButton.onClick.AddListener (()=> onEventTestButtonClick());
 		player = GameObject.FindGameObjectWithTag ("Player");
 		ChangeGameState (GAMESTATE_START);
+
+		mapCanvasObjects = new List<GameObject> ();
+		mapCanvasObjects.Add (generateButton.gameObject);
+		mapCanvasObjects.Add (eventTestButton.gameObject);
+//		mapCanvas = GameObject.FindGameObjectWithTag ("MapCanvas");
 	}
 
 	public void ChangeGameState (int newGameState)
 	{
-		int oldGameState = gameState;
+		oldGameState = gameState;
 		gameState = newGameState;
 		switch (gameState) {
 			case GAMESTATE_START:
@@ -49,7 +56,10 @@ public class GameController : MonoBehaviour {
 				break;
 
 			case GAMESTATE_MAP:
-				GameObject.FindGameObjectWithTag ("MapCanvas").SetActive (true);
+				foreach (GameObject o in mapCanvasObjects) {
+					o.SetActive (true);
+				}
+//				mapCanvas.SetActive (true);
 				player.SetActive (true);
 				Debug.ClearDeveloperConsole ();
 				TileHolder.Instance.gameObject.SetActive (true);
@@ -61,7 +71,10 @@ public class GameController : MonoBehaviour {
 			case GAMESTATE_EVENT:
 				if (oldGameState == GAMESTATE_MAP) {
 					player.GetComponent<MapPlayer> ().StopMoving ();
-					GameObject.FindGameObjectWithTag ("MapCanvas").SetActive (false);
+					foreach (GameObject o in mapCanvasObjects) {
+						o.SetActive (false);
+					}
+//					mapCanvas.SetActive (false);
 					player.SetActive (false);
 				}
 				TileHolder.Instance.gameObject.SetActive (false);

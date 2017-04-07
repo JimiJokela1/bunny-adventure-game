@@ -18,6 +18,8 @@ public class CameraController : MonoBehaviour {
 
 		followOffset = transform.position - target.position; // Calculate initial offset
 		eventZoomOffset = followOffset / 10;
+
+		transform.position = target.position + followOffset;
 	}
 
 	void FixedUpdate () {
