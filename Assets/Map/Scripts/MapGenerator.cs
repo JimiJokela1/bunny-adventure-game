@@ -27,7 +27,7 @@ public class MapGenerator : MonoBehaviour {
 		}
 	
 		generateButton = GameObject.Find ("GenerateButton").GetComponent<Button> ();
-		generateButton.onClick.AddListener (onGenerateButtonClick);
+		generateButton.onClick.AddListener (()=> onGenerateButtonClick());
 
 		tileHolder = GameObject.FindGameObjectWithTag ("TileHolder").transform;
 
@@ -44,6 +44,9 @@ public class MapGenerator : MonoBehaviour {
 		tileTypeList.Add (tileMountain1);
 	}
 
+	public void onGenerateButtonClick () {
+		GenerateMap ();
+	}
 
 	public void GenerateMap () {
 		foreach (GameObject tile in tilemap) {
@@ -133,10 +136,6 @@ public class MapGenerator : MonoBehaviour {
 				}
 			}
 		}
-	}
-
-	public void onGenerateButtonClick () {
-		GenerateMap ();
 	}
 
 	// Old
