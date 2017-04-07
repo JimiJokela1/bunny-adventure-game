@@ -14,8 +14,6 @@ public class MapGenerator : MonoBehaviour {
 	List<GameObject> tileTypeList;
 	Transform tileHolder;
 
-	Button generateButton; // for testing
-
 	// Instance for singleton class, meaning there is only one of this object ever
 	public static MapGenerator Instance = null;
 	void Awake () {
@@ -26,15 +24,12 @@ public class MapGenerator : MonoBehaviour {
 			Destroy (gameObject);
 		}
 	
-		generateButton = GameObject.Find ("GenerateButton").GetComponent<Button> ();
-		generateButton.onClick.AddListener (()=> onGenerateButtonClick());
-
 		tileHolder = GameObject.FindGameObjectWithTag ("TileHolder").transform;
 
-		tileSand1 = Resources.Load ("Tile_sand1") as GameObject;
-		tileSand2 = Resources.Load ("Tile_sand2") as GameObject;
-		tileWater1 = Resources.Load ("Tile_water1") as GameObject;
-		tileMountain1 = Resources.Load ("Tile_mountain1") as GameObject;
+		tileSand1 = Resources.Load ("Prefabs/Tile_sand1") as GameObject;
+		tileSand2 = Resources.Load ("Prefabs/Tile_sand2") as GameObject;
+		tileWater1 = Resources.Load ("Prefabs/Tile_water1") as GameObject;
+		tileMountain1 = Resources.Load ("Prefabs/Tile_mountain1") as GameObject;
 
 		tilemap = new GameObject[levelSize, levelSize];
 		tileTypeList = new List<GameObject> ();
@@ -42,10 +37,6 @@ public class MapGenerator : MonoBehaviour {
 		tileTypeList.Add (tileSand2);
 		tileTypeList.Add (tileWater1);
 		tileTypeList.Add (tileMountain1);
-	}
-
-	public void onGenerateButtonClick () {
-		GenerateMap ();
 	}
 
 	public void GenerateMap () {
@@ -138,38 +129,38 @@ public class MapGenerator : MonoBehaviour {
 		}
 	}
 
-	// Old
-	void GenerateMapBasic () {
-		Vector3 location = new Vector3 (-levelSize / 2 + 0.5f, 0, -levelSize / 2 + 0.5f);
-		for (int w = 0; w < levelSize; w++) {
-			for (int h = 0; h < levelSize; h++) {
-				tilemap [w, h] = Instantiate (tileTypeList [Random.Range (0, 4)], location, Quaternion.Euler (90, 0, 0));
-
-				//				int randomTile = Random.Range (1, 5);
-				//				switch (randomTile){
-				//					case 1:
-				//						tilemap [w, h] = Instantiate (tileSand1, location, Quaternion.Euler (90, 0, 0));
-				//						break;
-				//					case 2:
-				//						tilemap [w, h] = Instantiate (tileSand2, location, Quaternion.Euler (90, 0, 0));
-				//						break;
-				//					case 3:
-				//						tilemap [w, h] = Instantiate (tileWater1, location, Quaternion.Euler (90, 0, 0));
-				//						break;
-				//					case 4:
-				//						tilemap [w, h] = Instantiate (tileMountain1, location, Quaternion.Euler (90, 0, 0));
-				//						break;
-				//					default:
-				//						Debug.Log ("Random tile = " + randomTile);
-				//						break;
-				//				}
-				location += new Vector3 (1, 0, 0);
-			}
-			location = new Vector3 (-levelSize / 2 + 0.5f, 0, location.z);
-			location += new Vector3 (0, 0, 1);
-
-		}
-
-
-	}
+//	// Old
+//	void GenerateMapBasic () {
+//		Vector3 location = new Vector3 (-levelSize / 2 + 0.5f, 0, -levelSize / 2 + 0.5f);
+//		for (int w = 0; w < levelSize; w++) {
+//			for (int h = 0; h < levelSize; h++) {
+//				tilemap [w, h] = Instantiate (tileTypeList [Random.Range (0, 4)], location, Quaternion.Euler (90, 0, 0));
+//
+//				//				int randomTile = Random.Range (1, 5);
+//				//				switch (randomTile){
+//				//					case 1:
+//				//						tilemap [w, h] = Instantiate (tileSand1, location, Quaternion.Euler (90, 0, 0));
+//				//						break;
+//				//					case 2:
+//				//						tilemap [w, h] = Instantiate (tileSand2, location, Quaternion.Euler (90, 0, 0));
+//				//						break;
+//				//					case 3:
+//				//						tilemap [w, h] = Instantiate (tileWater1, location, Quaternion.Euler (90, 0, 0));
+//				//						break;
+//				//					case 4:
+//				//						tilemap [w, h] = Instantiate (tileMountain1, location, Quaternion.Euler (90, 0, 0));
+//				//						break;
+//				//					default:
+//				//						Debug.Log ("Random tile = " + randomTile);
+//				//						break;
+//				//				}
+//				location += new Vector3 (1, 0, 0);
+//			}
+//			location = new Vector3 (-levelSize / 2 + 0.5f, 0, location.z);
+//			location += new Vector3 (0, 0, 1);
+//
+//		}
+//
+//
+//	}
 }
