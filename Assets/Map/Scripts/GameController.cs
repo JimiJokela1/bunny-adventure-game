@@ -116,4 +116,8 @@ public class GameController : MonoBehaviour {
 	public void GetRandomNumber(int min, int max){
 
 	}
+
+	public void AddItemToInventory(string itemName){
+		player.GetComponent<PlayerController> ().AddToInv (itemName);
+	}
 }
