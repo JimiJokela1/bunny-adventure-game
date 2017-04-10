@@ -5,11 +5,12 @@ using UnityEngine.UI;
 
 public class MapGenerator : MonoBehaviour {
 
-	GameObject tileSand1;
-	GameObject tileSand2;
+	GameObject tileForest1;
+	GameObject tileForest2;
 	GameObject tileWater1;
 	GameObject tileMountain1;
 	GameObject spriteMountain1;
+	GameObject spriteForest1;
 	public int levelSize = 10;
 	public GameObject[,] tilemap;
 	List<GameObject> tileTypeList;
@@ -29,9 +30,10 @@ public class MapGenerator : MonoBehaviour {
 		tileHolder = GameObject.FindGameObjectWithTag ("TileHolder").transform;
 
 		spriteMountain1 = Resources.Load ("Prefabs/sprite_mountain1") as GameObject;
+		spriteForest1 = Resources.Load ("Prefabs/sprite_forest1") as GameObject;
 
-		tileSand1 = Resources.Load ("Prefabs/Tile_sand1") as GameObject;
-		tileSand2 = Resources.Load ("Prefabs/Tile_sand2") as GameObject;
+		tileForest1 = Resources.Load ("Prefabs/Tile_forest1") as GameObject;
+		tileForest2 = Resources.Load ("Prefabs/Tile_forest2") as GameObject;
 		tileWater1 = Resources.Load ("Prefabs/Tile_water1") as GameObject;
 		tileMountain1 = Resources.Load ("Prefabs/Tile_mountain1") as GameObject;
 
@@ -39,8 +41,8 @@ public class MapGenerator : MonoBehaviour {
 
 		tilemap = new GameObject[levelSize, levelSize];
 		tileTypeList = new List<GameObject> ();
-		tileTypeList.Add (tileSand1);
-		tileTypeList.Add (tileSand2);
+		tileTypeList.Add (tileForest1);
+		tileTypeList.Add (tileForest2);
 		tileTypeList.Add (tileWater1);
 		tileTypeList.Add (tileMountain1);
 	}
@@ -54,6 +56,7 @@ public class MapGenerator : MonoBehaviour {
 			Destroy (sprite);
 		}
 		terrainSprites.Clear ();
+		GetComponent<Clouds> ().DestroyClouds ();
 
 		int startAreaSize = 3;
 		Vector3 location = new Vector3 (-levelSize / 2 + 0.5f, 0, -levelSize / 2 + 0.5f);
@@ -77,6 +80,7 @@ public class MapGenerator : MonoBehaviour {
 		}
 		Smoothing ();
 		PlaceSprites ();
+		GetComponent<Clouds> ().PlaceClouds ();
 	}
 
 	// Looks at each tile and it's neighbours and if lots of one tile type surrounds the tile, changes to that tile type
@@ -151,8 +155,13 @@ public class MapGenerator : MonoBehaviour {
 				if (tilemap [w, h].tag == "tile_mountain") {
 					Vector3 location = new Vector3 (tilemap [w, h].transform.position.x, 0, tilemap [w, h].transform.position.z + Random.Range (-0.4f, 0.4f));
 					GameObject tempMountain = Instantiate (spriteMountain1, location, Quaternion.identity, tileHolder);
-					tempMountain.transform.localScale = new Vector3 (Random.Range (1, 4), Random.Range (2, 4), 0);
+					tempMountain.transform.localScale = new Vector3 (Random.Range (1f, 3f), Random.Range (2f, 3f), 1f);
 					terrainSprites.Add (tempMountain);
+				} else if (tilemap [w, h].tag == "tile_land1" || tilemap [w, h].tag == "tile_land2") {
+					Vector3 location = new Vector3 (tilemap [w, h].transform.position.x, 0, tilemap [w, h].transform.position.z + Random.Range (-0.4f, 0.4f));
+					GameObject tempForest = Instantiate (spriteForest1, location, Quaternion.identity, tileHolder);
+					tempForest.transform.localScale = new Vector3 (Random.Range(1f, 1.5f), Random.Range(2f, 4f), 1f);
+					terrainSprites.Add (tempForest);
 				}
 			}
 		}
