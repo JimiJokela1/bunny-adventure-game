@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+// Controls movement on map
 public class MapPlayer : MonoBehaviour{
 
 	Rigidbody rigidBody;
@@ -11,7 +12,7 @@ public class MapPlayer : MonoBehaviour{
 	float controlCooldownTime = 1.0f;
 	public bool moving = false;
 
-	float movementSpeed = 1;
+	public float movementSpeed = 1f;
 	Vector3 randomAcceleration;
 	Vector3 movement = Vector3.zero;
 	Vector3 finalDestination;
@@ -78,7 +79,7 @@ public class MapPlayer : MonoBehaviour{
 		if (moving) {
 			Move (movement);
 
-			movement += Vector3.ClampMagnitude (finalDestination - transform.position, movementSpeed * Time.fixedDeltaTime / 10);
+			movement += Vector3.ClampMagnitude (finalDestination - transform.position, movementSpeed * Time.fixedDeltaTime / 8);
 			movement += Vector3.ClampMagnitude (randomAcceleration, movementSpeed * Time.fixedDeltaTime / 10);
 			movement = Vector3.ClampMagnitude (movement, movementSpeed * Time.fixedDeltaTime);
 
@@ -87,7 +88,7 @@ public class MapPlayer : MonoBehaviour{
 			} else {
 				randomAcceleration = Vector3.ClampMagnitude (new Vector3 (Random.Range (-1f, 1f), 0, Random.Range (-1f, 1f)), 1);
 				derailTimer = 0;
-				randomDerailTime = Random.Range (0.2f, 1f);
+				randomDerailTime = Random.Range (0.2f, 0.6f);
 			}
 
 			if (Vector3.Distance(transform.position, finalDestination) < 0.6f){

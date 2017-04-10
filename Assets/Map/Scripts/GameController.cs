@@ -17,6 +17,7 @@ public class GameController : MonoBehaviour {
 		}
 	}
 
+	// Game state determines what scene, objects, ui, controls are active... ideally
 	public int gameState;
 	public const int GAMESTATE_START = 0;
 	public const int GAMESTATE_MAP = 1;
@@ -25,6 +26,7 @@ public class GameController : MonoBehaviour {
 
 	public string eventTileType;
 	GameObject player;
+	EventTriggerer eventTriggerer;
 
 	public List<GameObject> mapCanvasObjects;
 	public int oldGameState;
@@ -32,6 +34,7 @@ public class GameController : MonoBehaviour {
 	Button eventTestButton;
 
 	void Start(){
+		eventTriggerer = GetComponentInChildren<EventTriggerer> ();
 		generateButton = GameObject.Find ("GenerateButton").GetComponent<Button> ();
 		generateButton.onClick.AddListener (()=> onGenerateButtonClick());
 		eventTestButton = GameObject.Find ("EventTestButton").GetComponent<Button> ();
@@ -39,11 +42,13 @@ public class GameController : MonoBehaviour {
 		player = GameObject.FindGameObjectWithTag ("Player");
 		ChangeGameState (GAMESTATE_START);
 
+
 		mapCanvasObjects = new List<GameObject> ();
 		mapCanvasObjects.Add (generateButton.gameObject);
 		mapCanvasObjects.Add (eventTestButton.gameObject);
 //		mapCanvas = GameObject.FindGameObjectWithTag ("MapCanvas");
 	}
+
 
 	public void ChangeGameState (int newGameState)
 	{
@@ -63,12 +68,13 @@ public class GameController : MonoBehaviour {
 				player.SetActive (true);
 				Debug.ClearDeveloperConsole ();
 				TileHolder.Instance.gameObject.SetActive (true);
-				if (SceneManager.GetActiveScene ().name !=  "tilemap") {
+				if (SceneManager.GetActiveScene ().name != "tilemap") {
 					SceneManager.LoadScene ("tilemap");
 				}
 				break;
 
 			case GAMESTATE_EVENT:
+				eventTileType = eventTriggerer.GetEventTileType ();
 				if (oldGameState == GAMESTATE_MAP) {
 					player.GetComponent<MapPlayer> ().StopMoving ();
 					foreach (GameObject o in mapCanvasObjects) {
@@ -77,6 +83,7 @@ public class GameController : MonoBehaviour {
 //					mapCanvas.SetActive (false);
 					player.SetActive (false);
 				}
+
 				TileHolder.Instance.gameObject.SetActive (false);
 					if (SceneManager.GetActiveScene ().name !=  "EventGeneratorScene") {
 						SceneManager.LoadScene ("EventGeneratorScene");
@@ -108,10 +115,6 @@ public class GameController : MonoBehaviour {
 		gameObject.GetComponentInChildren<EventTriggerer> ().TriggerEvent ();
 	}
 
-	public void StartEvent(string tileType){
-		eventTileType = tileType;
-		ChangeGameState (GameController.GAMESTATE_EVENT);
-	}
 
 	public void GetRandomNumber(int min, int max){
 
