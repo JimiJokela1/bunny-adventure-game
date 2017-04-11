@@ -11,7 +11,7 @@ public class MapGenerator : MonoBehaviour {
 	GameObject tileMountain1;
 	GameObject spriteMountain1;
 	GameObject spriteForest1;
-	public int levelSize = 10;
+	public int levelSize = 100;
 	public GameObject[,] tilemap;
 	List<GameObject> tileTypeList;
 	Transform tileHolder;
@@ -63,9 +63,10 @@ public class MapGenerator : MonoBehaviour {
 
 		for (int w = 0; w < levelSize; w++) {
 			for (int h = 0; h < levelSize; h++) {
+				int boundary = levelSize / 2 - 20;
 				if (location.x < startAreaSize && location.x > -startAreaSize && location.z < startAreaSize && location.z > -startAreaSize) {
 					tilemap [w, h] = Instantiate (tileTypeList [Random.Range (0, 2)], location, Quaternion.Euler (90, 0, 0), tileHolder);
-				} else if ((location.x > 40 || location.x < -40) || (location.z > 40 || location.z < -40)) {
+				} else if ((location.x > boundary || location.x < -boundary) || (location.z > boundary || location.z < -boundary)) {
 					tilemap [w, h] = Instantiate (tileTypeList [2], location, Quaternion.Euler (90, 0, 0), tileHolder);
 				} else {
 					tilemap [w, h] = Instantiate (tileTypeList [Random.Range (0, 4)], location, Quaternion.Euler (90, 0, 0), tileHolder);

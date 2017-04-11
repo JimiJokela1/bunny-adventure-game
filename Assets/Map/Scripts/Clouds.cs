@@ -16,7 +16,7 @@ public class Clouds : MonoBehaviour {
 
 	List<GameObject> clouds;
 	Vector3[] winds;
-	int levelSize;
+	public int levelSize;
 
 	void Awake(){
 		tileHolder = GameObject.FindGameObjectWithTag ("TileHolder").transform;
@@ -39,10 +39,6 @@ public class Clouds : MonoBehaviour {
 		for(int wind = 0; wind < winds.Length; wind++){
 			winds[wind] = new Vector3 (Random.Range(0.3f, 1.5f), 0, Random.Range(-0.3f, -1.5f));
 		}
-
-	}
-
-	void Start(){
 		levelSize = MapGenerator.Instance.levelSize / 2;
 	}
 
