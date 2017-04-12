@@ -21,6 +21,7 @@ public class EventGenerator2 : MonoBehaviour{
 	public int rayRange = 10;
 
 	public GameObject item;
+	public List<GameObject> assetList = new List<GameObject> ();
 
 	// Use this for initialization
 	void Start () {
@@ -58,11 +59,15 @@ public class EventGenerator2 : MonoBehaviour{
 			GameObject asset = objectList [Random.Range (0, 3)];
 			Vector3 position = new Vector3 (Random.Range (-assetRangeX, assetRangeX), 0, Random.Range (-assetRangeZ, assetRangeZ));
 
-			Debug.DrawLine (position, new Vector3 (position.x, 10, position.z), Color.green, 60f);
+//			Debug.DrawLine (position, new Vector3 (position.x, 10, position.z), Color.green, 60f);
 
 			if (Physics.Raycast (new Vector3 (position.x, 10, position.z), -Vector3.up, 5f) == false) {
 				Debug.Log ("Ei osunut");
-				Instantiate (asset, position, Quaternion.identity);
+				GameObject temp = Instantiate (asset, position, Quaternion.identity);
+				if (temp.GetComponent<Rigidbody> ()) {
+					temp.GetComponent<Rigidbody> ().centerOfMass = new Vector3 (0f, -3f, 0f);
+				}
+				assetList.Add (temp);
 				j++;
 			} else {
 				j++;
