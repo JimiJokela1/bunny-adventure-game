@@ -5,11 +5,13 @@ using UnityEngine.UI;
 
 public class EventGenerator2 : MonoBehaviour{
 
-	NPC npc;
 
+
+	public NPC npc;
 	public LayerMask layerMask;
 
 	public List<GameObject> objectList = new List<GameObject>();
+	public List<GameObject> tempList = new List<GameObject> ();
 
 	public List<Material> terrainMaterial = new List<Material> ();
 
@@ -25,7 +27,7 @@ public class EventGenerator2 : MonoBehaviour{
 
 	// Use this for initialization
 	void Start () {
-
+		npc = GameObject.FindObjectOfType (typeof(NPC)) as NPC;
 		terrainPosition.Add (new Vector3(0, 0, 0));
 		terrainPosition.Add (new Vector3(10, 0, 0));
 		terrainPosition.Add (new Vector3(-10, 0, 0));
@@ -35,18 +37,22 @@ public class EventGenerator2 : MonoBehaviour{
 		terrainPosition.Add (new Vector3 (-10, 0, 10));
 		terrainPosition.Add (new Vector3(10, 0, 10));
 		terrainPosition.Add (new Vector3(-10, 0, -10));
-	
-
-		GenerateEvent ();
-	}
-
 		
-	public void instantiateNPC() {
-		npc.GenerateNPC ("velho", "TASSA ON TEKSTIA");
+
+
 	}
+
+	public void testi() {
+		npc.GenerateNPC ("velho");
+		Debug.Log (npc.name);
+	}
+
 
 	public void GenerateEvent() {
 	
+		foreach (GameObject o in tempList)
+			Destroy (o);
+
 		//Generate tiles
 		for (int i = 0; i < terrainPosition.Count; i++) {
 			Tile tileTemp = new Tile ("tile_" + i, 10, 1, 10, terrainPosition [i], terrainMaterial [Random.Range (0, 3)]);
@@ -73,19 +79,11 @@ public class EventGenerator2 : MonoBehaviour{
 				j++;
 			}
 
+			}
+
 		}
-		AddItems ();
+
+		
+
 	}
-
-	void AddItems(){
-		int itemCount = 8;
-		for (int i = 0; i < itemCount; i++) {
-			Vector3 position = new Vector3 (Random.Range (-assetRangeX, assetRangeX), 1, Random.Range (-assetRangeZ, assetRangeZ));
-			GameObject temp = Instantiate (item, position, Quaternion.identity);
-			temp.GetComponent<Item> ().GenerateItem ("Ankka");
-		}
-	}
-
-
-}
 	
