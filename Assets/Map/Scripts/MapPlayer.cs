@@ -9,10 +9,12 @@ public class MapPlayer : MonoBehaviour{
 	Rigidbody rigidBody;
 	bool controlCooldown = false;
 	float controlCooldownTimer;
-	float controlCooldownTime = 1.0f;
+	float controlCooldownTime = 0.5f;
 	public bool moving = false;
 
 	public float movementSpeed = 1f;
+	float originalMovementSpeed;
+	float slowMovementSpeed;
 	Vector3 randomAcceleration;
 	Vector3 movement = Vector3.zero;
 	Vector3 finalDestination;
@@ -20,8 +22,18 @@ public class MapPlayer : MonoBehaviour{
 	float derailTimer = 0;
 	float randomDerailTime = 0;
 
+	int tileMask;
+	string tileType;
+	GameObject flag;
+	GameObject destinationFlag;
+
 	void Start () {
+		originalMovementSpeed = movementSpeed;
+		slowMovementSpeed = originalMovementSpeed / 2f;
+		flag = Resources.Load ("Prefabs/flag") as GameObject;
 		rigidBody = GetComponent<Rigidbody> ();
+		tileMask = LayerMask.GetMask ("TileMask");
+		InvokeRepeating ("CheckTileUnder", 0, 0.5f);
 	}
 
 	void Update () {
@@ -54,6 +66,9 @@ public class MapPlayer : MonoBehaviour{
 					GeneratePath (destination);
 					controlCooldown = true;
 				}
+			} else if (controlCooldown == false && moving == true) {
+				StopMoving ();
+				controlCooldown = true;
 			}
 		}
 	}
@@ -64,6 +79,7 @@ public class MapPlayer : MonoBehaviour{
 		finalDestination = destination;
 		moving = true;
 		randomDerailTime = Random.Range (0.1f, 1f);
+		destinationFlag = Instantiate (flag, finalDestination, Quaternion.identity);
 	}
 
 	void Move (Vector3 movement) {
@@ -72,6 +88,10 @@ public class MapPlayer : MonoBehaviour{
 
 	public void StopMoving(){
 		moving = false;
+		if (destinationFlag != null) {
+			Destroy (destinationFlag);
+		}
+		Debug.Log ("stopped");
 	}
 
 	// Movement
@@ -92,13 +112,24 @@ public class MapPlayer : MonoBehaviour{
 			}
 
 			if (Vector3.Distance(transform.position, finalDestination) < 0.6f){
-				moving = false;
-				Debug.Log ("stopped");
+				StopMoving ();
 			}
 		}
 	}
 
-
+	void CheckTileUnder(){
+		RaycastHit hit;
+		if (Physics.Raycast (transform.position, Vector3.down, out hit, 100f, tileMask)) {
+			tileType = hit.collider.tag;
+			if (tileType == "tile_mountain") {
+				movementSpeed = slowMovementSpeed;
+			} else if (tileType == "tile_water") {
+				movementSpeed = slowMovementSpeed / 2;
+			} else {
+				movementSpeed = originalMovementSpeed;
+			}
+		}
+	}
 
 
 

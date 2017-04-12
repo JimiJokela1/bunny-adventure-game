@@ -32,21 +32,26 @@ public class GameController : MonoBehaviour {
 	public int oldGameState;
 	Button generateButton; // for testing
 	Button eventTestButton;
+	Button spawnCloudsButton;
 
 	void Start(){
 		eventTriggerer = GetComponentInChildren<EventTriggerer> ();
+
+		// TEST BUTTONS
 		generateButton = GameObject.Find ("GenerateButton").GetComponent<Button> ();
 		generateButton.onClick.AddListener (()=> onGenerateButtonClick());
 		eventTestButton = GameObject.Find ("EventTestButton").GetComponent<Button> ();
 		eventTestButton.onClick.AddListener (()=> onEventTestButtonClick());
-		player = GameObject.FindGameObjectWithTag ("Player");
-		ChangeGameState (GAMESTATE_START);
-
+		spawnCloudsButton = GameObject.Find ("SpawnCloudsButton").GetComponent<Button> ();
+		spawnCloudsButton.onClick.AddListener (() => onSpawnCloudsButtonClick ());
 
 		mapCanvasObjects = new List<GameObject> ();
 		mapCanvasObjects.Add (generateButton.gameObject);
 		mapCanvasObjects.Add (eventTestButton.gameObject);
-//		mapCanvas = GameObject.FindGameObjectWithTag ("MapCanvas");
+		mapCanvasObjects.Add (spawnCloudsButton.gameObject);
+
+		player = GameObject.FindGameObjectWithTag ("Player");
+		ChangeGameState (GAMESTATE_START);
 	}
 
 
@@ -64,7 +69,6 @@ public class GameController : MonoBehaviour {
 				foreach (GameObject o in mapCanvasObjects) {
 					o.SetActive (true);
 				}
-//				mapCanvas.SetActive (true);
 				player.SetActive (true);
 				Debug.ClearDeveloperConsole ();
 				TileHolder.Instance.gameObject.SetActive (true);
@@ -80,7 +84,6 @@ public class GameController : MonoBehaviour {
 					foreach (GameObject o in mapCanvasObjects) {
 						o.SetActive (false);
 					}
-//					mapCanvas.SetActive (false);
 					player.SetActive (false);
 				}
 
@@ -113,6 +116,11 @@ public class GameController : MonoBehaviour {
 
 	void onEventTestButtonClick(){
 		gameObject.GetComponentInChildren<EventTriggerer> ().TriggerEvent ();
+	}
+
+	void onSpawnCloudsButtonClick(){
+		MapGenerator.Instance.GetComponent<Clouds> ().DestroyClouds ();
+		MapGenerator.Instance.GetComponent<Clouds> ().PlaceClouds ();
 	}
 
 
