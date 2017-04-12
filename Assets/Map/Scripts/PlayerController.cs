@@ -19,10 +19,12 @@ public class PlayerController : MonoBehaviour {
 	MapPlayer mapPlayer;
 
 	List<string> inventory;
+	List<string> charactersMet;
 
 	void Start(){
 		mapPlayer = gameObject.GetComponent<MapPlayer> ();
 		inventory = new List<string> ();
+		charactersMet = new List<string> ();
 	}
 
 	void Update(){
