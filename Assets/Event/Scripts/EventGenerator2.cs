@@ -39,7 +39,7 @@ public class EventGenerator2 : MonoBehaviour{
 		terrainPosition.Add (new Vector3(-10, 0, -10));
 		
 
-
+		GenerateEvent ();
 	}
 
 	public void testi() {
@@ -79,11 +79,19 @@ public class EventGenerator2 : MonoBehaviour{
 				j++;
 			}
 
-			}
-
 		}
-
-		
-
+		AddItems ();
 	}
+
+
+	void AddItems(){
+		int itemCount = 8;
+		for (int i = 0; i < itemCount; i++) {
+			Vector3 position = new Vector3 (Random.Range (-assetRangeX, assetRangeX), 1, Random.Range (-assetRangeZ, assetRangeZ));
+			GameObject temp = Instantiate (item, position, Quaternion.identity);
+			temp.GetComponent<Item> ().GenerateItem ("Ankka");
+		}
+	}
+
+}
 	

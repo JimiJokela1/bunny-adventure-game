@@ -80,4 +80,19 @@ public class Clouds : MonoBehaviour {
 			}
 		}
 	}
+
+	public void AddClouds (int amount){
+		for (int i = 0; i < amount; i++) {
+			int randomSide = Random.Range (0, 2);
+			Vector3 location;
+			if (randomSide == 0) {
+				location = new Vector3 (Random.Range (-levelSize, levelSize), 10, levelSize);
+			} else {
+				location = new Vector3 (-levelSize, 10, Random.Range (-levelSize, levelSize));
+			}
+
+			GameObject tempCloud = Instantiate (cloudTypes [Random.Range (0, cloudTypes.Length)], location, Quaternion.Euler (90, Random.Range(0, 360), 0), tileHolder);
+			clouds.Add (tempCloud);
+		}
+	}
 }

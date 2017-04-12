@@ -27,12 +27,18 @@ public class GameController : MonoBehaviour {
 	public string eventTileType;
 	GameObject player;
 	EventTriggerer eventTriggerer;
+	string weatherState = "clear";
+	Light directionalLight;
+	float lightIntensityTarget;
+	public float lightChangeRate = 0.3f;
+	public bool testStorm = false;
 
 	public List<GameObject> mapCanvasObjects;
 	public int oldGameState;
 	Button generateButton; // for testing
 	Button eventTestButton;
 	Button spawnCloudsButton;
+	Button returnToMapButton;
 
 	void Start(){
 		eventTriggerer = GetComponentInChildren<EventTriggerer> ();
@@ -44,6 +50,10 @@ public class GameController : MonoBehaviour {
 		eventTestButton.onClick.AddListener (()=> onEventTestButtonClick());
 		spawnCloudsButton = GameObject.Find ("SpawnCloudsButton").GetComponent<Button> ();
 		spawnCloudsButton.onClick.AddListener (() => onSpawnCloudsButtonClick ());
+		returnToMapButton = GameObject.Find ("ReturnToMapButton").GetComponent<Button> ();
+		returnToMapButton.onClick.AddListener (() => GetComponent<ReturnToMap>().ToMap());
+
+		directionalLight = GameObject.Find ("Directional Light").GetComponent<Light> ();
 
 		mapCanvasObjects = new List<GameObject> ();
 		mapCanvasObjects.Add (generateButton.gameObject);
@@ -54,6 +64,10 @@ public class GameController : MonoBehaviour {
 		ChangeGameState (GAMESTATE_START);
 	}
 
+	void Update(){
+		ChangeLight ();
+		RandomWeather ();
+	}
 
 	public void ChangeGameState (int newGameState)
 	{
@@ -66,6 +80,7 @@ public class GameController : MonoBehaviour {
 				break;
 
 			case GAMESTATE_MAP:
+				returnToMapButton.gameObject.SetActive (false);
 				foreach (GameObject o in mapCanvasObjects) {
 					o.SetActive (true);
 				}
@@ -75,9 +90,12 @@ public class GameController : MonoBehaviour {
 				if (SceneManager.GetActiveScene ().name != "tilemap") {
 					SceneManager.LoadScene ("tilemap");
 				}
+
+				directionalLight = GameObject.Find ("Directional Light").GetComponent<Light> ();
 				break;
 
 			case GAMESTATE_EVENT:
+				returnToMapButton.gameObject.SetActive (true);
 				eventTileType = eventTriggerer.GetEventTileType ();
 				if (oldGameState == GAMESTATE_MAP) {
 					player.GetComponent<MapPlayer> ().StopMoving ();
@@ -130,5 +148,43 @@ public class GameController : MonoBehaviour {
 
 	public void AddItemToInventory(string itemName){
 		player.GetComponent<PlayerController> ().AddToInv (itemName);
+	}
+
+	void SetWeather(string weather){
+		if (weather == "clear") {
+			weatherState = weather;
+			lightIntensityTarget = 1.35f;
+		} else if (weather == "storm") {
+			weatherState = weather;
+			lightIntensityTarget = 0.1f;
+		}
+	}
+
+	void ChangeLight(){
+		if (weatherState == "clear") {
+			if (directionalLight.intensity < lightIntensityTarget) {
+				directionalLight.intensity += lightChangeRate * Time.deltaTime;
+			}
+		} else if (weatherState == "storm") {
+			if (directionalLight.intensity > lightIntensityTarget) {
+				directionalLight.intensity -= lightChangeRate * Time.deltaTime;
+			}
+		}
+	}
+
+	void RandomWeather(){
+		if (testStorm) {
+			SetWeather ("storm");
+		} else {
+			SetWeather ("clear");
+		}
+
+//		if (Random.Range (0f, 100f) < (5f * Time.deltaTime)) {
+//			if (weatherState == "clear") {
+//				SetWeather ("storm");
+//			} else if (weatherState == "storm") {
+//				SetWeather ("clear");
+//			}
+//		}
 	}
 }
