@@ -5,31 +5,17 @@ using UnityEngine;
 
 public class NPC : MonoBehaviour {
 
-	CanvasGroup canvasGroup;
-	Text textField;
-	Image imageField;
-	public string name;
-	TextAsset dialogueText;
-	public string[] dialogueLines;
+	public CanvasGroup canvasGroup;
+	public Text textField;
+	public Image imageField;
+	private string name;
 
-	void Start() {
-		textField = GameObject.Find("TextFieldNPC").GetComponent<Text>();
-		imageField = GameObject.Find("ImageFieldNPC").GetComponent<Image>();
-	}
-
-
-
-	public void GenerateNPC(string name) {
-		this.name = name;
-		textField.text = name;
-		imageField.sprite = Resources.Load<Sprite> (name);
-		dialogueText = Resources.Load<TextAsset> (name + "Dialogue");
-		//TESTIÄ
-		dialogueLines = (dialogueText.text.Split ('\n'));
-		textField.text = dialogueLines [0];
+	public void GenerateNPC(string name, string text) {
+		name = name;
+		imageField.sprite = Resources.Load<Sprite>("velho");
+		textField.text = "text";
 
 	}
-
 
 	public void hideUI() {
 		canvasGroup.alpha = 0f;
@@ -37,6 +23,10 @@ public class NPC : MonoBehaviour {
 
 	public void showUI() {
 		canvasGroup.alpha = 1f;
+	}
+
+	public void setFields() {
+		textField.text = "ULIULI";
 	}
 
 
