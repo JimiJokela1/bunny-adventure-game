@@ -7,7 +7,7 @@ public class EventGenerator2 : MonoBehaviour{
 
 
 
-	public NPC npc;
+	NPC npc;
 	public LayerMask layerMask;
 
 	public List<GameObject> objectList = new List<GameObject>();
@@ -66,7 +66,6 @@ public class EventGenerator2 : MonoBehaviour{
 			//Debug.DrawLine (position, new Vector3 (position.x, 10, position.z), Color.green, 60f);
 
 			if (Physics.Raycast (new Vector3 (position.x, 10, position.z), -Vector3.up, 5f) == false) {
-				Debug.Log ("Ei osunut");
 				GameObject tempAsset = Instantiate (asset, position, Quaternion.identity);
 				tempList.Add (tempAsset);
 				j++;
