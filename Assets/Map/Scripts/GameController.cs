@@ -84,6 +84,7 @@ public class GameController : MonoBehaviour {
 				foreach (GameObject o in mapCanvasObjects) {
 					o.SetActive (true);
 				}
+				directionalLight.gameObject.SetActive (true);
 				player.SetActive (true);
 				Debug.ClearDeveloperConsole ();
 				TileHolder.Instance.gameObject.SetActive (true);
@@ -91,7 +92,6 @@ public class GameController : MonoBehaviour {
 					SceneManager.LoadScene ("tilemap");
 				}
 
-				directionalLight = GameObject.Find ("Directional Light").GetComponent<Light> ();
 				break;
 
 			case GAMESTATE_EVENT:
@@ -102,6 +102,7 @@ public class GameController : MonoBehaviour {
 					foreach (GameObject o in mapCanvasObjects) {
 						o.SetActive (false);
 					}
+					directionalLight.gameObject.SetActive (false);
 					player.SetActive (false);
 				}
 
@@ -161,13 +162,15 @@ public class GameController : MonoBehaviour {
 	}
 
 	void ChangeLight(){
-		if (weatherState == "clear") {
-			if (directionalLight.intensity < lightIntensityTarget) {
-				directionalLight.intensity += lightChangeRate * Time.deltaTime;
-			}
-		} else if (weatherState == "storm") {
-			if (directionalLight.intensity > lightIntensityTarget) {
-				directionalLight.intensity -= lightChangeRate * Time.deltaTime;
+		if (directionalLight != null) {
+			if (weatherState == "clear") {
+				if (directionalLight.intensity < lightIntensityTarget) {
+					directionalLight.intensity += lightChangeRate * Time.deltaTime;
+				}
+			} else if (weatherState == "storm") {
+				if (directionalLight.intensity > lightIntensityTarget) {
+					directionalLight.intensity -= lightChangeRate * Time.deltaTime;
+				}
 			}
 		}
 	}
