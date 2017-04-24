@@ -15,6 +15,8 @@ public class MapPlayer : MonoBehaviour{
 	public float movementSpeed = 1f;
 	float originalMovementSpeed;
 	float slowMovementSpeed;
+	public bool umbrella = false;
+	public bool camping = false;
 	Vector3 randomAcceleration;
 	Vector3 movement = Vector3.zero;
 	Vector3 finalDestination;
@@ -46,6 +48,7 @@ public class MapPlayer : MonoBehaviour{
 				controlCooldownTimer = 0f;
 			}
 		}
+		UpdateSpeed ();
 	}
 
 	void FixedUpdate () {
@@ -56,7 +59,7 @@ public class MapPlayer : MonoBehaviour{
 
 	// Check if clicked on map
 	public void HandleControls () {
-		if (Input.GetAxis ("Action1") > 0.1f) {
+		if (Input.GetAxis ("Action1") > 0.1f && GameController.Instance.mouseOverButton == false && camping == false) {
 			if (controlCooldown == false && moving == false) {
 				Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
 				RaycastHit hit;
@@ -124,17 +127,24 @@ public class MapPlayer : MonoBehaviour{
 			if (tileType == "tile_mountain") {
 				movementSpeed = slowMovementSpeed;
 			} else if (tileType == "tile_water") {
-				movementSpeed = slowMovementSpeed / 2;
+				movementSpeed = slowMovementSpeed / 2f;
 			} else {
 				movementSpeed = originalMovementSpeed;
 			}
 		}
 	}
 
-
-
-
-
+	void UpdateSpeed(){
+		if (GameController.Instance.weatherState == "storm" && umbrella == false) {
+			movementSpeed = slowMovementSpeed / 2f;
+		} else if (tileType == "tile_mountain") {
+			movementSpeed = slowMovementSpeed;
+		} else if (tileType == "tile_water") {
+			movementSpeed = slowMovementSpeed / 2f;
+		} else {
+			movementSpeed = originalMovementSpeed;
+		}
+	}
 
 //	//------------------------------------------------------------
 //	// OOOOOOLD
