@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class Camp : MonoBehaviour {
 
-	// Buttons for camping activities including
-	// inventory?
-	// clickable objects that make little sounds or particle effects like fire stoking
-
+	// TODO
+	// Buttons for camping activities including:
+	// - inventory?
+	// - clickable objects that make little sounds or particle effects like fire stoking
 	// Camp sprite and campfire particle system prefab
 
 	GameObject inventory;
