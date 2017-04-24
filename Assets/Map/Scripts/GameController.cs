@@ -27,11 +27,13 @@ public class GameController : MonoBehaviour {
 	public string eventTileType;
 	GameObject player;
 	EventTriggerer eventTriggerer;
-	string weatherState = "clear";
+	public string weatherState = "clear";
 	Light directionalLight;
 	float lightIntensityTarget;
 	public float lightChangeRate = 0.3f;
 	public bool testStorm = false;
+
+	public bool mouseOverButton = false;
 
 	public List<GameObject> mapCanvasObjects;
 	public int oldGameState;
@@ -39,6 +41,7 @@ public class GameController : MonoBehaviour {
 	Button eventTestButton;
 	Button spawnCloudsButton;
 	Button returnToMapButton;
+	Button umbrellaButton;
 
 	void Start(){
 		eventTriggerer = GetComponentInChildren<EventTriggerer> ();
@@ -52,6 +55,9 @@ public class GameController : MonoBehaviour {
 		spawnCloudsButton.onClick.AddListener (() => onSpawnCloudsButtonClick ());
 		returnToMapButton = GameObject.Find ("ReturnToMapButton").GetComponent<Button> ();
 		returnToMapButton.onClick.AddListener (() => GetComponent<ReturnToMap>().ToMap());
+		umbrellaButton = GameObject.Find ("UmbrellaButton").GetComponent<Button> ();
+		umbrellaButton.onClick.AddListener (() => onUmbrellaButtonClick ());
+		umbrellaButton.gameObject.SetActive (false);
 
 		directionalLight = GameObject.Find ("Directional Light").GetComponent<Light> ();
 
@@ -142,6 +148,9 @@ public class GameController : MonoBehaviour {
 		MapGenerator.Instance.GetComponent<Clouds> ().PlaceClouds ();
 	}
 
+	void onUmbrellaButtonClick(){
+		player.GetComponent<MapPlayer> ().umbrella = true;
+	}
 
 	public void GetRandomNumber(int min, int max){
 
@@ -154,10 +163,13 @@ public class GameController : MonoBehaviour {
 	void SetWeather(string weather){
 		if (weather == "clear") {
 			weatherState = weather;
-			lightIntensityTarget = 1.35f;
+			lightIntensityTarget = 1.25f;
+			umbrellaButton.gameObject.SetActive (false);
+			player.GetComponent<MapPlayer> ().umbrella = false;
 		} else if (weather == "storm") {
 			weatherState = weather;
 			lightIntensityTarget = 0.1f;
+			umbrellaButton.gameObject.SetActive (true);
 		}
 	}
 

@@ -36,7 +36,7 @@ public class CameraController : MonoBehaviour {
 				targetCamPos = target.position + followOffset;
 				transform.position = Vector3.Lerp (transform.position, targetCamPos, smoothing * Time.fixedDeltaTime);
 			} else {
-				if (GetComponent<Camera> ().orthographicSize > 1.5) {
+				if (GetComponent<Camera> ().orthographicSize > 1.5f) {
 					GetComponent<Camera> ().orthographicSize += -Time.fixedDeltaTime * 10f;
 				}
 			}
