@@ -16,6 +16,7 @@ public class MapPlayer : MonoBehaviour{
 	float originalMovementSpeed;
 	float slowMovementSpeed;
 	public bool umbrella = false;
+	public bool camping = false;
 	Vector3 randomAcceleration;
 	Vector3 movement = Vector3.zero;
 	Vector3 finalDestination;
@@ -58,7 +59,7 @@ public class MapPlayer : MonoBehaviour{
 
 	// Check if clicked on map
 	public void HandleControls () {
-		if (Input.GetAxis ("Action1") > 0.1f && GameController.Instance.mouseOverButton == false) {
+		if (Input.GetAxis ("Action1") > 0.1f && GameController.Instance.mouseOverButton == false && camping == false) {
 			if (controlCooldown == false && moving == false) {
 				Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
 				RaycastHit hit;
@@ -144,7 +145,6 @@ public class MapPlayer : MonoBehaviour{
 			movementSpeed = originalMovementSpeed;
 		}
 	}
-
 
 //	//------------------------------------------------------------
 //	// OOOOOOLD

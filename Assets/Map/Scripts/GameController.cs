@@ -38,10 +38,11 @@ public class GameController : MonoBehaviour {
 	public List<GameObject> mapCanvasObjects;
 	public int oldGameState;
 	Button generateButton; // for testing
-	Button eventTestButton;
-	Button spawnCloudsButton;
+	Button eventTestButton; // for testing
+	Button spawnCloudsButton; // for testing
 	Button returnToMapButton;
 	Button umbrellaButton;
+	Button campButton;
 
 	void Start(){
 		eventTriggerer = GetComponentInChildren<EventTriggerer> ();
@@ -58,6 +59,8 @@ public class GameController : MonoBehaviour {
 		umbrellaButton = GameObject.Find ("UmbrellaButton").GetComponent<Button> ();
 		umbrellaButton.onClick.AddListener (() => onUmbrellaButtonClick ());
 		umbrellaButton.gameObject.SetActive (false);
+		campButton = GameObject.Find ("CampButton").GetComponent<Button> ();
+		campButton.onClick.AddListener (() => onCampButtonClick ());
 
 		directionalLight = GameObject.Find ("Directional Light").GetComponent<Light> ();
 
@@ -150,6 +153,19 @@ public class GameController : MonoBehaviour {
 
 	void onUmbrellaButtonClick(){
 		player.GetComponent<MapPlayer> ().umbrella = true;
+	}
+
+	void onCampButtonClick(){
+		if (player.GetComponent<MapPlayer> ().camping == false) {
+			player.GetComponent<MapPlayer> ().camping = true;
+			player.GetComponent<MapPlayer> ().StopMoving ();
+			campButton.gameObject.GetComponentInChildren<Text> ().text = "Pack up";
+			player.GetComponent<Camp> ().SetUpCamp ();
+		} else if (player.GetComponent<MapPlayer> ().camping == true) {
+			player.GetComponent<MapPlayer> ().camping = false;
+			campButton.gameObject.GetComponentInChildren<Text> ().text = "Set up camp";
+			player.GetComponent<Camp> ().PackUpCamp ();
+		}
 	}
 
 	public void GetRandomNumber(int min, int max){

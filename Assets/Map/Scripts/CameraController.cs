@@ -6,10 +6,12 @@ public class CameraController : MonoBehaviour {
 
 	private Transform target;
 	public float smoothing = 5f; // Camera follow speed
+	public float zoomSpeed = 10f;
 	string mode;
 
 	static Vector3 followOffset = Vector3.zero;
 	Vector3 eventZoomOffset;
+	Vector3 campZoomOffset;
 	Vector3 targetCamPos;
 
 	void Awake () {
@@ -19,7 +21,8 @@ public class CameraController : MonoBehaviour {
 		if (followOffset == Vector3.zero) {
 			followOffset = transform.position - target.position; // Calculate initial offset
 		}
-		eventZoomOffset = followOffset / 10;
+		eventZoomOffset = followOffset / 10f;
+		campZoomOffset = followOffset / 6f;
 
 		transform.position = target.position + followOffset;
 	}
@@ -33,11 +36,18 @@ public class CameraController : MonoBehaviour {
 			transform.position = Vector3.Lerp (transform.position, targetCamPos, smoothing * Time.fixedDeltaTime);
 		} else {
 			if (mode == "Follow") {
+				if (GetComponent<Camera> ().orthographicSize < 10f) {
+					GetComponent<Camera> ().orthographicSize += Time.fixedDeltaTime * zoomSpeed;
+				}
 				targetCamPos = target.position + followOffset;
 				transform.position = Vector3.Lerp (transform.position, targetCamPos, smoothing * Time.fixedDeltaTime);
-			} else {
+			} else if (mode == "EventZoom") {
 				if (GetComponent<Camera> ().orthographicSize > 1.5f) {
-					GetComponent<Camera> ().orthographicSize += -Time.fixedDeltaTime * 10f;
+					GetComponent<Camera> ().orthographicSize -= Time.fixedDeltaTime * zoomSpeed;
+				}
+			} else if (mode == "CampZoom") {
+				if (GetComponent<Camera> ().orthographicSize > 4.5f) {
+					GetComponent<Camera> ().orthographicSize -= Time.fixedDeltaTime * zoomSpeed;
 				}
 			}
 		}
@@ -46,5 +56,14 @@ public class CameraController : MonoBehaviour {
 	public void EventZoom(){
 		mode = "EventZoom";
 		targetCamPos = target.position + eventZoomOffset;
+	}
+
+	public void CampZoom(){
+		mode = "CampZoom";
+		targetCamPos = target.position + campZoomOffset;
+	}
+
+	public void Unzoom(){
+		mode = "Follow";
 	}
 }
