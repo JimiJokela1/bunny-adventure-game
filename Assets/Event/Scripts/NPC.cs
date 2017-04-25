@@ -26,7 +26,7 @@ public class NPC : MonoBehaviour {
 		dialogueText = Resources.Load<TextAsset> (name + "Dialogue");
 		//TESTIÄ
 		dialogueLines = (dialogueText.text.Split ('\n'));
-		textField.text = dialogueLines [2];
+		textField.text = dialogueLines [0];
 
 	}
 
