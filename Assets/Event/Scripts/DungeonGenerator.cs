@@ -3,14 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class DungeonGenerator : MonoBehaviour {
-	
 	private int doorPos;
 	private Vector3 dirX = new Vector3 (1, 0, 0);
 	private Vector3 dirZ = new Vector3 (0, 0, 1);
 	private Vector3 origin;
-
-
-	public int numberOfRooms = 5;
 	public int minLength = 10;
 	public int maxLength = 20;
 	public int height = 5;
@@ -39,8 +35,8 @@ public class DungeonGenerator : MonoBehaviour {
 		}
 	}
 
-	public void GenerateRoom(int numberOfDoors, Vector3 origin) {
-		
+	public void GenerateRoom(int numberOfDoors) {
+		origin = new Vector3(Random.Range(0, 10), 0, Random.Range(0,10));
 		int wallLengthX = Random.Range (minLength, maxLength);
 		int wallLengthZ = Random.Range (minLength, maxLength);
 
@@ -51,9 +47,7 @@ public class DungeonGenerator : MonoBehaviour {
 	}
 
 	public void GenerateDungeon() {
-		for (int i = 0; i < numberOfRooms; i++) {
-			GenerateRoom (2, new Vector3 (Random.Range (0, 10), 0, Random.Range (0, 10)));
-		}
+		GenerateRoom (3);
 	}
 
 }
