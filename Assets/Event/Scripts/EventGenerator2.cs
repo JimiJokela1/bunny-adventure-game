@@ -5,11 +5,6 @@ using UnityEngine.UI;
 
 public class EventGenerator2 : MonoBehaviour{
 
-
-
-	public NPC npc;
-	public LayerMask layerMask;
-
 	public List<GameObject> objectList = new List<GameObject>();
 	public List<GameObject> tempList = new List<GameObject> ();
 
@@ -25,7 +20,6 @@ public class EventGenerator2 : MonoBehaviour{
 
 	// Use this for initialization
 	void Start () {
-		npc = GameObject.FindObjectOfType (typeof(NPC)) as NPC;
 		terrainPosition.Add (new Vector3(0, 0, 0));
 		terrainPosition.Add (new Vector3(10, 0, 0));
 		terrainPosition.Add (new Vector3(-10, 0, 0));
@@ -39,21 +33,28 @@ public class EventGenerator2 : MonoBehaviour{
 
 
 	}
+		
 
-	public void testi() {
-		npc.GenerateNPC ("velho");
-		Debug.Log (npc.name);
-	}
-
-
+	//generoi eventin, ottaa inputtina string tileType jonka perusteella luo alueen
 	public void GenerateEvent() {
 	
 		foreach (GameObject o in tempList)
 			Destroy (o);
 
+		//LUO VUORI EVENT
+
+
+
+
+		/*
+
+		// LUO METSA EVENT
+
 		//Generate tiles
+
+
 		for (int i = 0; i < terrainPosition.Count; i++) {
-			Tile tileTemp = new Tile ("tile_" + i, 10, 1, 10, terrainPosition [i], terrainMaterial [Random.Range (0, 3)]);
+			Tile tileTemp = new Tile ("tile_" + i, 10, 1, 10, terrainPosition [i], terrainMaterial [Random.Range (0, 2)]);
 			tileTemp.instantiateTile (tileTemp);
 		}
 		//Generate trees & rocks
@@ -66,7 +67,6 @@ public class EventGenerator2 : MonoBehaviour{
 			//Debug.DrawLine (position, new Vector3 (position.x, 10, position.z), Color.green, 60f);
 
 			if (Physics.Raycast (new Vector3 (position.x, 10, position.z), -Vector3.up, 5f) == false) {
-				Debug.Log ("Ei osunut");
 				GameObject tempAsset = Instantiate (asset, position, Quaternion.identity);
 				tempList.Add (tempAsset);
 				j++;
@@ -75,6 +75,8 @@ public class EventGenerator2 : MonoBehaviour{
 			}
 
 			}
+		*/
+			
 
 		}
 
