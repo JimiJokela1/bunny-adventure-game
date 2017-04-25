@@ -47,7 +47,6 @@ public class EventGenerator2 : MonoBehaviour{
 		Debug.Log (npc.name);
 	}
 
-
 	public void GenerateEvent() {
 	
 		foreach (GameObject o in tempList)
@@ -78,7 +77,6 @@ public class EventGenerator2 : MonoBehaviour{
 			} else {
 				j++;
 			}
-
 		}
 		AddItems ();
 	}
