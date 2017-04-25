@@ -27,7 +27,6 @@ public class NPC : MonoBehaviour {
 		//TESTIÄ
 		dialogueLines = (dialogueText.text.Split ('\n'));
 		textField.text = dialogueLines [0];
-
 	}
 
 
@@ -38,6 +37,5 @@ public class NPC : MonoBehaviour {
 	public void showUI() {
 		canvasGroup.alpha = 1f;
 	}
-
 
 }
