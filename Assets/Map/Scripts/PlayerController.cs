@@ -19,6 +19,8 @@ public class PlayerController : MonoBehaviour {
 	MapPlayer mapPlayer;
 
 	List<string> inventory;
+
+	List<string> progress; // ??
 	List<string> charactersMet;
 
 	void Start(){

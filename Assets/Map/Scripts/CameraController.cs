@@ -10,9 +10,11 @@ public class CameraController : MonoBehaviour {
 	string mode;
 
 	static Vector3 followOffset = Vector3.zero;
-	Vector3 eventZoomOffset;
-	Vector3 campZoomOffset;
+	public Vector3 eventZoomOffset;
+	public Vector3 campZoomOffset;
 	Vector3 targetCamPos;
+	float eventZoomCameraSize;
+	float campZoomCameraSize;
 
 	void Awake () {
 		mode = "Follow";
@@ -42,25 +44,60 @@ public class CameraController : MonoBehaviour {
 				targetCamPos = target.position + followOffset;
 				transform.position = Vector3.Lerp (transform.position, targetCamPos, smoothing * Time.fixedDeltaTime);
 			} else if (mode == "EventZoom") {
-				if (GetComponent<Camera> ().orthographicSize > 1.5f) {
+				if (GetComponent<Camera> ().orthographicSize > eventZoomCameraSize) {
 					GetComponent<Camera> ().orthographicSize -= Time.fixedDeltaTime * zoomSpeed;
 				}
 			} else if (mode == "CampZoom") {
-				if (GetComponent<Camera> ().orthographicSize > 4.5f) {
+				if (GetComponent<Camera> ().orthographicSize > campZoomCameraSize) {
 					GetComponent<Camera> ().orthographicSize -= Time.fixedDeltaTime * zoomSpeed;
 				}
 			}
 		}
 	} 
 
-	public void EventZoom(){
+
+	/// <summary>
+	/// Zooms down to triggered event.
+	/// </summary>
+	/// <param name="offset">Offset from player to zoom to in perspective mode.</param>
+	/// <param name="cameraSize">Camera size to zoom to in orthographic mode.</param>
+	public void EventZoom(Vector3 offset, float cameraSize = 1.5f){
 		mode = "EventZoom";
-		targetCamPos = target.position + eventZoomOffset;
+		targetCamPos = target.position + offset;
+		eventZoomCameraSize = cameraSize;
 	}
 
-	public void CampZoom(){
+	/// <summary>
+	/// Zooms down to triggered event.
+	/// </summary>
+	/// <param name="offset">Offset from player to zoom to in perspective mode.</param>
+	/// <param name="cameraSize">Camera size to zoom to in orthographic mode.</param>
+	public void EventZoom(float cameraSize = 1.5f){
+		mode = "EventZoom";
+		targetCamPos = target.position + eventZoomOffset;
+		eventZoomCameraSize = cameraSize;
+	}
+
+	/// <summary>
+	/// Zooms down to camp.
+	/// </summary>
+	/// <param name="offset">Offset from player to zoom to in perspective mode.</param>
+	/// <param name="cameraSize">Camera size to zoom to in orthographic mode.</param>
+	public void CampZoom(Vector3 offset, float cameraSize = 4.5f){
+		mode = "CampZoom";
+		targetCamPos = target.position + offset;
+		campZoomCameraSize = cameraSize;
+	}
+
+	/// <summary>
+	/// Zooms down to camp.
+	/// </summary>
+	/// <param name="offset">Offset from player to zoom to in perspective mode.</param>
+	/// <param name="cameraSize">Camera size to zoom to in orthographic mode.</param>
+	public void CampZoom(float cameraSize = 4.5f){
 		mode = "CampZoom";
 		targetCamPos = target.position + campZoomOffset;
+		campZoomCameraSize = cameraSize;
 	}
 
 	public void Unzoom(){

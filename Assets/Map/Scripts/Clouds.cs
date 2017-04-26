@@ -76,8 +76,10 @@ public class Clouds : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Places the initial clouds.
+	/// </summary>
 	public void PlaceClouds(){
-		
 		for (int i = 0; i < cloudAmount; i++) {
 			Vector3 location = new Vector3 (Random.Range (-levelSize, levelSize), 10, Random.Range (-levelSize, levelSize));
 			GameObject tempCloud = Instantiate (cloudTypes [Random.Range (0, cloudTypes.Length)], location, Quaternion.Euler (90, Random.Range(0, 360), 0), tileHolder);
@@ -85,6 +87,9 @@ public class Clouds : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Destroys all of the clouds.
+	/// </summary>
 	public void DestroyClouds(){
 		foreach (GameObject cloud in clouds) {
 			Destroy (cloud);
@@ -96,6 +101,9 @@ public class Clouds : MonoBehaviour {
 		stormClouds.Clear ();
 	}
 
+	/// <summary>
+	/// Moves the clouds with one of the random winds vector3s.
+	/// </summary>
 	void MoveClouds(){
 		foreach (GameObject cloud in clouds) {
 			cloud.transform.position += winds[Random.Range(0, winds.Length)] * Time.deltaTime;
@@ -105,6 +113,9 @@ public class Clouds : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Resets the clouds that reach the end of the map to the other side of the map.
+	/// </summary>
 	void ResetClouds(){
 		foreach (GameObject cloud in clouds) {
 			if (cloud.transform.position.x > levelSize || cloud.transform.position.z < -levelSize) {
@@ -127,6 +138,10 @@ public class Clouds : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Adds more clouds.
+	/// </summary>
+	/// <param name="amount">Amount.</param>
 	public void AddClouds (int amount){
 		for (int i = 0; i < amount; i++) {
 			int randomSide = Random.Range (0, 2);
@@ -141,6 +156,10 @@ public class Clouds : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Adds storm clouds.
+	/// </summary>
+	/// <param name="amount">Amount.</param>
 	public void AddStormClouds (int amount){
 		for (int i = 0; i < amount; i++) {
 //			Vector3 location = new Vector3 (Random.Range (-30, 30), 10, Random.Range (-30, 30));
@@ -154,8 +173,10 @@ public class Clouds : MonoBehaviour {
 		fadingStormCloudsIn = true;
 	}
 
+	/// <summary>
+	/// Starts fading out storm clouds.
+	/// </summary>
 	public void RemoveStormClouds(){
 		fadingStormCloudsOut = true;
-
 	}
 }
