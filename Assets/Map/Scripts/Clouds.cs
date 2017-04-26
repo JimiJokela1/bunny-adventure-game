@@ -13,7 +13,6 @@ public class Clouds : MonoBehaviour {
 
 	GameObject[] cloudTypes;
 	Transform tileHolder;
-	GameObject player;
 
 	List<GameObject> clouds;
 	public List<GameObject> stormClouds;
@@ -48,10 +47,6 @@ public class Clouds : MonoBehaviour {
 			winds[wind] = new Vector3 (Random.Range(0.3f, 1.5f), 0, Random.Range(-0.3f, -1.5f));
 		}
 		levelSize = MapGenerator.Instance.levelSize / 2;
-	}
-
-	void Start(){
-		player = GameObject.FindGameObjectWithTag ("Player");
 	}
 
 	void Update(){

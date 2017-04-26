@@ -22,8 +22,9 @@ public class GameController : MonoBehaviour {
 	public int oldGameState;
 	public const int GAMESTATE_START = 0;
 	public const int GAMESTATE_MAP = 1;
-	public const int GAMESTATE_EVENT = 2;
-	public const int GAMESTATE_EXIT = 3;
+	public const int GAMESTATE_RANDOMEVENT = 2;
+	public const int GAMESTATE_STORYEVENT = 3;
+	public const int GAMESTATE_EXIT = 4;
 
 	public string eventTileType;
 	GameObject player;
@@ -52,7 +53,7 @@ public class GameController : MonoBehaviour {
 	public bool mouseOverButton = false; // tells if mouse pointer is over a button
 
 	void Start(){
-		eventTriggerer = GetComponentInChildren<EventTriggerer> ();
+//		eventTriggerer = GetComponentInChildren<EventTriggerer> ();
 
 		// TEST BUTTONS
 		generateButton = GameObject.Find ("GenerateButton").GetComponent<Button> ();
@@ -107,7 +108,7 @@ public class GameController : MonoBehaviour {
 		}
 	}
 
-	public void ChangeGameState (int newGameState)
+	public void ChangeGameState (int newGameState, EventTriggerer eventTriggerer = null)
 	{
 		oldGameState = gameState;
 		gameState = newGameState;
@@ -127,30 +128,38 @@ public class GameController : MonoBehaviour {
 				player.SetActive (true);
 				Debug.ClearDeveloperConsole ();
 				TileHolder.Instance.gameObject.SetActive (true);
+				EventHolder.Instance.gameObject.SetActive (true);
 				if (SceneManager.GetActiveScene ().name != "tilemap") {
 					SceneManager.LoadScene ("tilemap");
 				}
 
 				break;
 
-			case GAMESTATE_EVENT:
-				returnToMapButton.gameObject.SetActive (true);
-				eventTileType = eventTriggerer.GetEventTileType ();
-				if (oldGameState == GAMESTATE_MAP) {
-					player.GetComponent<MapPlayer> ().StopMoving ();
-					foreach (GameObject o in mapCanvasObjects) {
-						o.SetActive (false);
+			case GAMESTATE_RANDOMEVENT:
+				if (eventTriggerer != null) {
+					returnToMapButton.gameObject.SetActive (true);
+					eventTileType = eventTriggerer.GetEventTileType ();
+					if (oldGameState == GAMESTATE_MAP) {
+						player.GetComponent<MapPlayer> ().StopMoving ();
+						foreach (GameObject o in mapCanvasObjects) {
+							o.SetActive (false);
+						}
+						directionalLight.gameObject.SetActive (false);
+						player.SetActive (false);
 					}
-					directionalLight.gameObject.SetActive (false);
-					player.SetActive (false);
-				}
 
-				TileHolder.Instance.gameObject.SetActive (false);
-					if (SceneManager.GetActiveScene ().name !=  "EventGeneratorScene") {
+					TileHolder.Instance.gameObject.SetActive (false);
+					EventHolder.Instance.gameObject.SetActive (false);
+					if (SceneManager.GetActiveScene ().name != "EventGeneratorScene") {
 						SceneManager.LoadScene ("EventGeneratorScene");
 					}
+				}
 				break;
 
+			case GAMESTATE_STORYEVENT:
+
+				break;
+				
 			default:
 				break;
 		}
@@ -173,7 +182,7 @@ public class GameController : MonoBehaviour {
 	}
 
 	void onEventTestButtonClick(){
-		gameObject.GetComponentInChildren<EventTriggerer> ().TriggerEvent ();
+//		gameObject.GetComponentInChildren<EventTriggerer> ().TriggerRandomEvent ();
 	}
 
 	void onSpawnCloudsButtonClick(){
