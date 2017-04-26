@@ -10,6 +10,7 @@ public class DungeonGenerator : MonoBehaviour {
 	public int minLength = 10;
 	public int maxLength = 20;
 	public int height = 5;
+	public int numberOfRooms = 1;
 
 	public List<Material> wallMaterial = new List<Material> ();
 
@@ -35,8 +36,7 @@ public class DungeonGenerator : MonoBehaviour {
 		}
 	}
 
-	public void GenerateRoom(int numberOfDoors) {
-		origin = new Vector3(Random.Range(0, 10), 0, Random.Range(0,10));
+	public void GenerateRoom(int numberOfDoors, Vector3 origin) {
 		int wallLengthX = Random.Range (minLength, maxLength);
 		int wallLengthZ = Random.Range (minLength, maxLength);
 
@@ -47,7 +47,8 @@ public class DungeonGenerator : MonoBehaviour {
 	}
 
 	public void GenerateDungeon() {
-		GenerateRoom (3);
+		GenerateRoom (3, new Vector3(Random.Range(0, 10), 0, Random.Range(0,10)));
+	
 	}
 
 }
