@@ -28,7 +28,7 @@ public class GameController : MonoBehaviour {
 
 	public string eventTileType;
 	GameObject player;
-	EventTriggerer eventTriggerer;
+//	EventTriggerer eventTriggerer;
 	ParticleSystem rainParticles;
 	public string weatherState = "clear";
 
@@ -41,6 +41,7 @@ public class GameController : MonoBehaviour {
 	float clearLightIntensity = 1f;
 	public float timeOfDay = 8f;
 	public float timeScale = 1f;
+	bool timePaused = false;
 
 	public bool testStorm = false; // for testing
 	Button generateButton; // for testing
@@ -93,7 +94,7 @@ public class GameController : MonoBehaviour {
 		ChangeLight ();
 		RandomWeather ();
 
-		if (gameState == GAMESTATE_MAP) {
+		if (gameState == GAMESTATE_MAP && !timePaused) {
 			if (player.GetComponent<MapPlayer> ().camping == false) {
 				timeOfDay += Time.deltaTime * timeScale;
 				if (timeOfDay >= 24f) {
@@ -108,6 +109,11 @@ public class GameController : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Changes the state of the game.
+	/// </summary>
+	/// <param name="newGameState">New game state: see constants.</param>
+	/// <param name="eventTriggerer">If an EventTriggerer is changing the game state.</param>
 	public void ChangeGameState (int newGameState, EventTriggerer eventTriggerer = null)
 	{
 		oldGameState = gameState;
@@ -132,7 +138,7 @@ public class GameController : MonoBehaviour {
 				if (SceneManager.GetActiveScene ().name != "tilemap") {
 					SceneManager.LoadScene ("tilemap");
 				}
-
+				ResumeTime ();
 				break;
 
 			case GAMESTATE_RANDOMEVENT:
@@ -182,7 +188,7 @@ public class GameController : MonoBehaviour {
 	}
 
 	void onEventTestButtonClick(){
-//		gameObject.GetComponentInChildren<EventTriggerer> ().TriggerRandomEvent ();
+		GameObject.FindGameObjectWithTag("EventTrigger").GetComponentInChildren<EventTriggerer> ().TestTriggerEvent ();
 	}
 
 	void onSpawnCloudsButtonClick(){
@@ -211,6 +217,10 @@ public class GameController : MonoBehaviour {
 		player.GetComponent<PlayerController> ().AddToInv (itemName);
 	}
 
+	/// <summary>
+	/// Sets the weather.
+	/// </summary>
+	/// <param name="weather">A weather state value: "clear" or "storm".</param>
 	void SetWeather(string weather){
 		if (weather == "clear") {
 			weatherState = weather;
@@ -226,6 +236,9 @@ public class GameController : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Updates skylight intensity target value based on time of day and weather.
+	/// </summary>
 	void SkyLightUpdate(){
 		if (timeOfDay < 12f) {
 			lightIntensityTarget = Mathf.Lerp(nighttimeLightIntensity, daytimeLightIntensity, timeOfDay / 12f);
@@ -240,6 +253,9 @@ public class GameController : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Changes the skylight intensity each frame at a speed set by lightChangeRate.
+	/// </summary>
 	void ChangeLight(){
 		if (directionalLight != null) {
 			if (directionalLight.intensity < lightIntensityTarget) {
@@ -265,5 +281,13 @@ public class GameController : MonoBehaviour {
 //				SetWeather ("clear");
 //			}
 //		}
+	}
+
+	public void StopTime(){
+		timePaused = true;
+	}
+
+	public void ResumeTime(){
+		timePaused = false;
 	}
 }

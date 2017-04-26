@@ -8,7 +8,7 @@ public class EventTriggerer : MonoBehaviour {
 
 	string tileType;
 	public string eventType;
-	float triggerDistance = 2f;
+	float triggerDistance = 0.5f;
 
 	GameObject player;
 	GameObject flag;
@@ -23,17 +23,21 @@ public class EventTriggerer : MonoBehaviour {
 	float triggerTime = 3f;
 	public bool triggered;
 	bool visible = false;
+	bool testOverride = false;
 
 	void Start () {
-		eventType = "RandomEvent";
+		if (eventType == null) {
+			eventType = "RandomEvent";
+		}
 		player = GameObject.FindGameObjectWithTag ("Player");
 		tileMask = LayerMask.GetMask ("TileMask");
 		flag = Resources.Load ("Prefabs/flag") as GameObject;
+		GetComponent<MeshRenderer> ().sortingLayerName = "EventLayer";
 		gameObject.GetComponent<MeshRenderer> ().enabled = false;
 	}
 
 	void Update(){
-		if (visible) {
+		if (visible || testOverride) {
 			if (!triggered && Vector3.Distance (transform.position, player.transform.position) < triggerDistance) {
 				Debug.Log ("trigger");
 				if (eventType == "RandomEvent") {
@@ -58,8 +62,22 @@ public class EventTriggerer : MonoBehaviour {
 		}
 	}
 
-	// Calling this begins a random event
-	// Checks the tile under 
+	public void TestTriggerEvent(){
+		RaycastHit hit;
+		if (Physics.Raycast (player.transform.position, Vector3.down, out hit, 100f, tileMask)) {
+			tileType = hit.collider.tag;
+			Instantiate (flag, hit.point, Quaternion.identity);
+			triggered = true;
+			testOverride = true;
+			player.GetComponent<MapPlayer> ().StopMoving ();
+			Camera.main.GetComponent<CameraController> ().EventZoom ();
+			GameController.Instance.StopTime ();
+		}
+	}
+
+	/// <summary>
+	/// Triggers a random event, checks the tile under.
+	/// </summary>
 	void TriggerRandomEvent() {
 		RaycastHit hit;
 		if (Physics.Raycast (player.transform.position, Vector3.down, out hit, 100f, tileMask)) {
@@ -68,10 +86,13 @@ public class EventTriggerer : MonoBehaviour {
 			triggered = true;
 			player.GetComponent<MapPlayer> ().StopMoving ();
 			Camera.main.GetComponent<CameraController> ().EventZoom ();
+			GameController.Instance.StopTime ();
 		}
 	}
 
-
+	/// <summary>
+	/// Triggers a story event, checks the tile under.
+	/// </summary>
 	void TriggerStoryEvent(){
 		RaycastHit hit;
 		if (Physics.Raycast (player.transform.position, Vector3.down, out hit, 100f, tileMask)) {
@@ -80,10 +101,15 @@ public class EventTriggerer : MonoBehaviour {
 			triggered = true;
 			player.GetComponent<MapPlayer> ().StopMoving ();
 			Camera.main.GetComponent<CameraController> ().EventZoom ();
+			GameController.Instance.StopTime ();
 		}
 	}
 
-	// Returns the type of tile under player, called from GameController
+	// 
+	/// <summary>
+	/// Returns the type of the map tile under the player.
+	/// </summary>
+	/// <returns>The map tile type for event generation.</returns>
 	public string GetEventTileType(){
 		RaycastHit hit;
 		if (Physics.Raycast (player.transform.position, Vector3.down, out hit, 100f, tileMask)) {
@@ -98,7 +124,10 @@ public class EventTriggerer : MonoBehaviour {
 		GetComponent<MeshRenderer> ().enabled = true;
 	}
 
-
+	void OnTriggerExit(){
+		visible = false;
+		GetComponent<MeshRenderer> ().enabled = false;
+	}
 //	void FixedUpdate () {
 //		if (player.GetComponent<MapPlayer> ().moving) {
 //			if (randomEventTimer > randomEventTime) {
