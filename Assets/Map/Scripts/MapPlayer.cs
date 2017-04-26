@@ -102,10 +102,11 @@ public class MapPlayer : MonoBehaviour{
 		if (moving) {
 			Move (movement);
 
-			movement += Vector3.ClampMagnitude (finalDestination - transform.position, movementSpeed * Time.fixedDeltaTime / 8);
-			movement += Vector3.ClampMagnitude (randomAcceleration, movementSpeed * Time.fixedDeltaTime / 10);
+			movement += Vector3.ClampMagnitude (finalDestination - transform.position, movementSpeed * Time.fixedDeltaTime / 8); // Towards target position
+			movement += Vector3.ClampMagnitude (randomAcceleration, movementSpeed * Time.fixedDeltaTime / 10); // Makes the path curve around randomly
 			movement = Vector3.ClampMagnitude (movement, movementSpeed * Time.fixedDeltaTime);
 
+			// Apply new derail at random intervals 
 			if (derailTimer < randomDerailTime) {
 				derailTimer += Time.fixedDeltaTime;
 			} else {
@@ -120,6 +121,7 @@ public class MapPlayer : MonoBehaviour{
 		}
 	}
 
+	// Keeps track of which tile type the player is on for event generation and movement speed
 	void CheckTileUnder(){
 		RaycastHit hit;
 		if (Physics.Raycast (transform.position, Vector3.down, out hit, 100f, tileMask)) {
@@ -134,6 +136,7 @@ public class MapPlayer : MonoBehaviour{
 		}
 	}
 
+	// Updates movement speed according to weather and type of tile the player is on
 	void UpdateSpeed(){
 		if (GameController.Instance.weatherState == "storm" && umbrella == false) {
 			movementSpeed = slowMovementSpeed / 2f;

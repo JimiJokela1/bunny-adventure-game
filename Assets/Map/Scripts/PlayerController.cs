@@ -30,7 +30,7 @@ public class PlayerController : MonoBehaviour {
 	void Update(){
 		if (GameController.Instance.GetGameState () == GameController.GAMESTATE_MAP) {
 			mapPlayer.HandleControls ();
-		} else if (GameController.Instance.GetGameState () == GameController.GAMESTATE_EVENT) {
+		} else if (GameController.Instance.GetGameState () == GameController.GAMESTATE_RANDOMEVENT) {
 			// Event controls
 		}
 	}

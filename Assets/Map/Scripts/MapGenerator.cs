@@ -11,11 +11,18 @@ public class MapGenerator : MonoBehaviour {
 	GameObject tileMountain1;
 	GameObject spriteMountain1;
 	GameObject spriteForest1;
+
+	GameObject randomEvent;
+
 	public int levelSize = 100;
+	public int waterWidth = 20;
 	public GameObject[,] tilemap;
 	List<GameObject> tileTypeList;
 	Transform tileHolder;
 	List<GameObject> terrainSprites;
+
+	public int randomEventAmount = 100;
+	Transform eventHolder;
 
 	// Instance for singleton class, meaning there is only one of this object ever
 	public static MapGenerator Instance = null;
@@ -27,7 +34,8 @@ public class MapGenerator : MonoBehaviour {
 			Destroy (gameObject);
 		}
 		// References
-		tileHolder = GameObject.FindGameObjectWithTag ("TileHolder").transform;
+		tileHolder = GameObject.Find("TileHolder").transform;
+		eventHolder = GameObject.Find ("EventHolder").transform;
 
 		spriteMountain1 = Resources.Load ("Prefabs/sprite_mountain1") as GameObject;
 		spriteForest1 = Resources.Load ("Prefabs/sprite_forest1") as GameObject;
@@ -37,6 +45,8 @@ public class MapGenerator : MonoBehaviour {
 		tileWater1 = Resources.Load ("Prefabs/Tile_water1") as GameObject;
 		tileMountain1 = Resources.Load ("Prefabs/Tile_mountain1") as GameObject;
 
+		randomEvent = Resources.Load ("Prefabs/RandomEvent") as GameObject;
+
 		terrainSprites = new List<GameObject> ();
 
 		tilemap = new GameObject[levelSize, levelSize];
@@ -45,6 +55,9 @@ public class MapGenerator : MonoBehaviour {
 		tileTypeList.Add (tileForest2);
 		tileTypeList.Add (tileWater1);
 		tileTypeList.Add (tileMountain1);
+	}
+
+	void Start(){
 	}
 
 	// Generates new map, destroys all old tiles and slaps down new ones, calls Smoothing() and PlaceSprites()
@@ -60,10 +73,10 @@ public class MapGenerator : MonoBehaviour {
 
 		int startAreaSize = 3;
 		Vector3 location = new Vector3 (-levelSize / 2 + 0.5f, 0, -levelSize / 2 + 0.5f);
-
+		// Place all tiles
 		for (int w = 0; w < levelSize; w++) {
 			for (int h = 0; h < levelSize; h++) {
-				int boundary = levelSize / 2 - 20;
+				int boundary = levelSize / 2 - waterWidth;
 				if (location.x < startAreaSize && location.x > -startAreaSize && location.z < startAreaSize && location.z > -startAreaSize) {
 					tilemap [w, h] = Instantiate (tileTypeList [Random.Range (0, 2)], location, Quaternion.Euler (90, 0, 0), tileHolder);
 				} else if ((location.x > boundary || location.x < -boundary) || (location.z > boundary || location.z < -boundary)) {
@@ -81,6 +94,7 @@ public class MapGenerator : MonoBehaviour {
 		}
 		Smoothing ();
 		PlaceSprites ();
+		PlaceEvents ();
 		GetComponent<Clouds> ().PlaceClouds ();
 	}
 
@@ -89,6 +103,7 @@ public class MapGenerator : MonoBehaviour {
 	void Smoothing () {
 		for (int w = 1; w < tilemap.GetLength (0) - 1; w++) {
 			for (int h = 1; h < tilemap.GetLength (1) - 1; h++) {
+				
 				// Make a list of neighbouring tiles
 				List<GameObject> neighbours = new List<GameObject> ();
 
@@ -149,7 +164,7 @@ public class MapGenerator : MonoBehaviour {
 		}
 	}
 
-	// Places upright mountain sprites 
+	// Places upright mountain and forest sprites 
 	void PlaceSprites(){
 		for (int w = 1; w < tilemap.GetLength (0) - 1; w++) {
 			for (int h = 1; h < tilemap.GetLength (1) - 1; h++) {
@@ -165,6 +180,14 @@ public class MapGenerator : MonoBehaviour {
 					terrainSprites.Add (tempForest);
 				}
 			}
+		}
+	}
+
+	// Places random events randomly on map and hides them
+	void PlaceEvents(){
+		for (int i = 0; i < randomEventAmount; i++) {
+			Vector3 location = new Vector3 (Random.Range (-levelSize + waterWidth, levelSize - waterWidth), 0.5f, Random.Range (-levelSize + waterWidth, levelSize - waterWidth));
+			Instantiate (randomEvent, location, Quaternion.identity, eventHolder);
 		}
 	}
 
