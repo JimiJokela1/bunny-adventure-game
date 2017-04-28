@@ -33,6 +33,10 @@ public class Inventory : MonoBehaviour {
 		return inventory;
 	}
 
+	public void LoadInv(List<string> inv){
+		inventory = inv;
+	}
+
 	public void ShowInv(){
 		inventoryBackground.SetActive (true);
 		Vector2 location = new Vector2(50, -100);

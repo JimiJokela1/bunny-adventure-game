@@ -22,8 +22,8 @@ public class PlayerController : MonoBehaviour {
 //	GameObject inventoryBackground;
 //	GameObject inventoryItemPrefab;
 
-	List<string> progress; // ??
-	List<string> charactersMet;
+	public List<string> progress; // ??
+	public List<string> charactersMet;
 
 	void Start(){
 		mapPlayer = gameObject.GetComponent<MapPlayer> ();

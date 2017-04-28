@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 
 public class GameController : MonoBehaviour {
 
@@ -47,6 +49,7 @@ public class GameController : MonoBehaviour {
 	Button generateButton; // for testing
 	Button eventTestButton; // for testing
 	Button spawnCloudsButton; // for testing
+	Button saveButton; // testing
 	Button returnToMapButton;
 	Button umbrellaButton;
 	Button campButton;
@@ -63,6 +66,9 @@ public class GameController : MonoBehaviour {
 		eventTestButton.onClick.AddListener (()=> onEventTestButtonClick());
 		spawnCloudsButton = GameObject.Find ("SpawnCloudsButton").GetComponent<Button> ();
 		spawnCloudsButton.onClick.AddListener (() => onSpawnCloudsButtonClick ());
+
+//		saveButton = GameObject.Find ("SaveButton").GetComponent<Button> ();
+//		saveButton.onClick.AddListener (() => SaveGame ());
 
 		// Gameplay buttons
 		returnToMapButton = GameObject.Find ("ReturnToMapButton").GetComponent<Button> ();
@@ -120,7 +126,10 @@ public class GameController : MonoBehaviour {
 		gameState = newGameState;
 		switch (gameState) {
 			case GAMESTATE_START:
-				MapGenerator.Instance.GenerateMap ();
+				if (!LoadGame ()) {
+					MapGenerator.Instance.GenerateMap ();
+				}
+
 				ChangeGameState (GAMESTATE_MAP);
 				break;
 
@@ -132,7 +141,6 @@ public class GameController : MonoBehaviour {
 				SetWeather (weatherState);
 				directionalLight.gameObject.SetActive (true);
 				player.SetActive (true);
-				Debug.ClearDeveloperConsole ();
 				TileHolder.Instance.gameObject.SetActive (true);
 				EventHolder.Instance.gameObject.SetActive (true);
 				if (SceneManager.GetActiveScene ().name != "tilemap") {
@@ -290,4 +298,79 @@ public class GameController : MonoBehaviour {
 	public void ResumeTime(){
 		timePaused = false;
 	}
+
+	void SaveGame(){
+		try {
+			BinaryFormatter bf = new BinaryFormatter ();
+			FileStream file = File.Open (Application.persistentDataPath + "/savedata.dat", FileMode.OpenOrCreate);
+
+			SaveData saveData = new SaveData ();
+			saveData.progress = player.GetComponent<PlayerController> ().progress;
+			saveData.charactersMet = player.GetComponent<PlayerController> ().charactersMet;
+
+			for(int w = 0; w < MapGenerator.Instance.tilemap.GetLength(0); w++){
+				for(int h = 0; h < MapGenerator.Instance.tilemap.GetLength(1); h++){
+					saveData.tileTypes[w + h] = MapGenerator.Instance.tilemap[w, h].tag;
+				}
+			}
+
+			saveData.playerPosition[0] = player.transform.position.x;
+			saveData.playerPosition[1] = player.transform.position.y;
+			saveData.playerPosition[2] = player.transform.position.z;
+			saveData.inventory = GetComponent<Inventory> ().GetInv ();
+
+			bf.Serialize (file, saveData);
+			file.Close ();
+		} catch (FileLoadException e) {
+			Debug.Log (e.ToString ());
+		}
+	}
+
+	bool LoadGame(){
+		try {
+			if (File.Exists (Application.persistentDataPath + "/savedata.dat")) {
+				BinaryFormatter bf = new BinaryFormatter ();
+				FileStream file = File.Open (Application.persistentDataPath + "/savedata.dat", FileMode.Open);
+				file.Position = 0;
+				SaveData saveData = (SaveData)bf.Deserialize (file);
+				file.Close ();
+
+				player.GetComponent<PlayerController> ().progress = saveData.progress;
+				player.GetComponent<PlayerController> ().charactersMet = saveData.charactersMet;
+
+				MapGenerator.Instance.LoadMap(saveData.tileTypes);
+
+
+				Vector3 pos = new Vector3(saveData.playerPosition[0], saveData.playerPosition[1], saveData.playerPosition[2]);
+				player.transform.position = pos;
+				GetComponent<Inventory> ().LoadInv (saveData.inventory);
+				return true;
+			} else {
+				return false;
+			}
+		} catch (FileLoadException e) {
+			Debug.Log (e.ToString ());
+			return false;
+		}
+	}
 }
+
+[System.Serializable]
+class SaveData
+{
+	public List<string> progress;
+	public List<string> charactersMet;
+	public string[] tileTypes;
+	public float[] playerPosition;
+	public List<string> inventory;
+
+	public SaveData(){
+		progress = new List<string> ();
+		charactersMet = new List<string> ();
+		inventory = new List<string> ();
+		playerPosition = new float[3];
+		tileTypes = new string[MapGenerator.Instance.levelSize * MapGenerator.Instance.levelSize];
+	}
+}
+
+
