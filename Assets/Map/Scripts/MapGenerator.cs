@@ -325,13 +325,15 @@ public class MapGenerator : MonoBehaviour {
 		Vector3 location = new Vector3 (-levelSize / 2 + 0.5f, 0, -levelSize / 2 + 0.5f);
 		for (int w = 0; w < levelSize; w++) {
 			for (int h = 0; h < levelSize; h++) {
-				tilemap[w, h] = Instantiate (tileTypeDict[tiletags[w+h]], location, Quaternion.Euler (90, 0, 0), tileHolder);
+				tilemap[w, h] = Instantiate (tileTypeDict[tiletags[w * 100 + h]], location, Quaternion.Euler (90, 0, 0), tileHolder);
 				location += new Vector3 (1, 0, 0);
 			}
 			location = new Vector3 (-levelSize / 2 + 0.5f, 0, location.z);
 			location += new Vector3 (0, 0, 1);
 		}
-		Debug.Log (tilemap [50, 50].tag);
+		PlaceSprites ();
+		PlaceEvents (randomEventAmount);
+		GetComponent<Clouds> ().PlaceClouds ();
 	}
 
 //	// Old
