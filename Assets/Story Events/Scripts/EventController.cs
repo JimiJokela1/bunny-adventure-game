@@ -21,6 +21,14 @@ public class EventController : MonoBehaviour {
 			TeleportPlayer (locationsArray [1]);
 			sceneProgress += 1;
 			break;
+		case 3:
+			Debug.Log ("jarrko event");
+			sceneProgress += 1;
+			break;
+		case 4:
+			Debug.Log("ulos kartalta");
+			//tasta takas mappiin
+			break;
 		default:
 			break;
 		}
