@@ -32,7 +32,7 @@ public class EventCameraController : MonoBehaviour {
 		// Check if camera is orthographic or perspective and move it accordingly, specifically zoom is different
 		if (!GetComponent<Camera> ().orthographic) {
 			//if (mode == "Follow") {
-			//	targetCamPos = target.position + followOffset;
+				targetCamPos = target.position + followOffset;
 			//}
 			transform.position = Vector3.Lerp (transform.position, targetCamPos, smoothing * Time.fixedDeltaTime);
 		} else {

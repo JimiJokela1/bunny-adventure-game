@@ -13,13 +13,14 @@ public class EventController : MonoBehaviour {
 	public void TriggerEvent() {
 		switch (sceneProgress) {
 		case 1:
-			Debug.Log ("triggerevent osu");
 			TeleportPlayer (locationsArray [0]);
+			Debug.Log ("birdie event");
 			sceneProgress += 1;
 			break;
 		case 2:
 			TeleportPlayer (locationsArray [1]);
 			sceneProgress += 1;
+			Debug.Log ("");
 			break;
 		case 3:
 			Debug.Log ("jarrko event");

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class EventPlayer : MonoBehaviour {
 
+	public bool canMove = true;
 	Rigidbody rigidBody;
 	bool controlCooldown = false;
 	float controlCooldownTimer;
@@ -43,24 +44,26 @@ public class EventPlayer : MonoBehaviour {
 //		transform.forward.Set (move.x, move.y, move.z);
 //		Quaternion.
 //		rigidBody.MoveRotation(
-		Move();
-		Turning ();
-		if (controlCooldown == true) {
-			if (controlCooldownTimer > controlCooldownTime) {
-				controlCooldown = false;
-				controlCooldownTimer = 0f;
-			} else {
-				controlCooldownTimer += Time.fixedDeltaTime;
+		if(canMove) {
+			Move();
+			Turning ();
+			if (controlCooldown == true) {
+				if (controlCooldownTimer > controlCooldownTime) {
+					controlCooldown = false;
+					controlCooldownTimer = 0f;
+				} else {
+					controlCooldownTimer += Time.fixedDeltaTime;
+				}
 			}
-		}
-//		Explode ();
-		LedgeJump ();
-//		Jump ();
-		if (transform.position.y < -5f) {
-			rigidBody.velocity = Vector3.zero;
-			rigidBody.angularVelocity = Vector3.zero;
-			rigidBody.MoveRotation (Quaternion.identity);
-			transform.position = new Vector3 (0f, 1.1f, 0f);
+//			Explode ();
+			LedgeJump ();
+//			Jump ();
+			if (transform.position.y < -5f) {
+				rigidBody.velocity = Vector3.zero;
+				rigidBody.angularVelocity = Vector3.zero;
+				rigidBody.MoveRotation (Quaternion.identity);
+				transform.position = new Vector3 (0f, 1.1f, 0f);
+			}
 		}
 	}
 
