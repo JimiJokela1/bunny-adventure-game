@@ -30,8 +30,10 @@ public class DialogueController : MonoBehaviour {
 		npcName = GameObject.Find ("NPC").GetComponent<NPC> ().name;
 		ButtonDOption1 = (Button)GameObject.Find ("ButtonDOption1").GetComponent<Button> ();
 		ButtonDOption2 = (Button)GameObject.Find ("ButtonDOption2").GetComponent<Button> ();
-		//ButtonDOption1.gameObject.SetActive(false);
-		//ButtonDOption2.gameObject.SetActive (false);
+		ButtonDOption1.GetComponentInChildren<Text>().text = "Scream";
+		ButtonDOption2.GetComponentInChildren<Text>().text = "Hide";
+		ButtonDOption1.gameObject.SetActive(false);
+		ButtonDOption2.gameObject.SetActive (false);
 	}
 
 	void Update(){
@@ -47,14 +49,20 @@ public class DialogueController : MonoBehaviour {
 	/// </summary>
 	public void ShowDialogue () {
 		if (playerOrNPC == false && lineNumberNPC < dialogueNPC.Length) {
+			textFieldPlayer.text = "";
 			textFieldNPC.text = dialogueNPC [lineNumberNPC];
 			lineNumberNPC++;
 			playerOrNPC = true;
 		} else if (lineNumberNPC == dialogueNPC.Length && lineNumberPlayer == dialoguePlayer.Length) {
 			textFieldPlayer.text = "";
 			textFieldNPC.text = "";
+			imageFieldNPC.gameObject.SetActive (false);
+			imageFieldPlayer.gameObject.SetActive (false);
+			Debug.Log ("LOL");
+			isDialogueOn = false;
 		}
 		else if (lineNumberPlayer < dialoguePlayer.Length){
+			textFieldNPC.text = "";
 			textFieldPlayer.text = dialoguePlayer [lineNumberPlayer];
 			lineNumberPlayer++;
 			playerOrNPC = false;
@@ -62,7 +70,8 @@ public class DialogueController : MonoBehaviour {
 	}
 
 	public void ShowButtons (){
-		
+		ButtonDOption1.gameObject.SetActive(true);
+		ButtonDOption2.gameObject.SetActive (true);
 	}
 	/// <summary>
 	/// Destroyes both buttons and loads dialogue 1
