@@ -7,7 +7,7 @@ public class TriggerScript : MonoBehaviour {
 	public EventController eventController;
 
 	void OnTriggerEnter(Collider other) {
-		Debug.Log ("osu");
-		eventController.TeleportPlayer (new Vector3(0,0.5f,0));
+		Debug.Log ("ontrigger osu");
+		eventController.TriggerEvent ();
 	}
 }
