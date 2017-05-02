@@ -8,6 +8,7 @@ public class EventTriggerer : MonoBehaviour {
 
 	string tileType;
 	public string eventType;
+	public string storyEventName;
 	float triggerDistance = 0.5f;
 
 	GameObject player;

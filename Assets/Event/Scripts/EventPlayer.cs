@@ -56,12 +56,19 @@ public class EventPlayer : MonoBehaviour {
 //		Explode ();
 		LedgeJump ();
 //		Jump ();
-		if (transform.position.y < -5f) {
+		if (transform.position.y < -15f) {
 			rigidBody.velocity = Vector3.zero;
 			rigidBody.angularVelocity = Vector3.zero;
 			rigidBody.MoveRotation (Quaternion.identity);
 			transform.position = new Vector3 (0f, 1.1f, 0f);
 		}
+	}
+
+	public void FallInTrap(){
+		rigidBody.velocity = Vector3.zero;
+		rigidBody.angularVelocity = Vector3.zero;
+		rigidBody.MoveRotation (Quaternion.identity);
+		transform.position = new Vector3 (0f, 5f, 0f);
 	}
 
 	// Move player according to keyboard input
