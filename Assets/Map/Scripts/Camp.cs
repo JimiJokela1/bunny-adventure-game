@@ -10,24 +10,25 @@ public class Camp : MonoBehaviour {
 	// - clickable objects that make little sounds or particle effects like fire stoking
 	// Camp sprite and campfire particle system prefab
 
-	GameObject inventory;
 
 	void Start(){
-		inventory = GameObject.Find ("Inventory");
-		inventory.SetActive (false);
+//		inventory = GameObject.Find ("Inventory");
+//		inventory.SetActive (false);
 	}
 
 	public void SetUpCamp(){
 		// Activate all the things
 		Camera.main.GetComponent<CameraController>().CampZoom();
+		GameController.Instance.GetComponent<Inventory> ().ShowInv ();
 	}
 
 	public void PackUpCamp(){
 		// Deactivate all the things
 		Camera.main.GetComponent<CameraController>().Unzoom();
+		GameController.Instance.GetComponent<Inventory> ().HideInv ();
 	}
 
 	void OnInventoryButtonClick(){
-		inventory.SetActive (true);
+//		inventory.SetActive (true);
 	}
 }

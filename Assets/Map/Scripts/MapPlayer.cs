@@ -13,7 +13,7 @@ public class MapPlayer : MonoBehaviour{
 	public bool moving = false;
 
 	public float movementSpeed = 1f;
-	float originalMovementSpeed;
+	public float originalMovementSpeed;
 	float slowMovementSpeed;
 	public bool umbrella = false;
 	public bool camping = false;
@@ -57,7 +57,9 @@ public class MapPlayer : MonoBehaviour{
 		}
 	}
 
-	// Check if clicked on map
+	/// <summary>
+	/// Handles the controls: Checks if clicked on map.
+	/// </summary>
 	public void HandleControls () {
 		if (Input.GetAxis ("Action1") > 0.1f && GameController.Instance.mouseOverButton == false && camping == false) {
 			if (controlCooldown == false && moving == false) {
@@ -76,7 +78,10 @@ public class MapPlayer : MonoBehaviour{
 		}
 	}
 
-	// Start moving
+	/// <summary>
+	/// Generates the path to destination and starts moving.
+	/// </summary>
+	/// <param name="destination">Destination point.</param>
 	void GeneratePath (Vector3 destination){
 		randomAcceleration = Vector3.ClampMagnitude(new Vector3 (Random.Range (-1f, 1f), 0, Random.Range (-1f, 1f)), 1);
 		finalDestination = destination;
@@ -85,10 +90,9 @@ public class MapPlayer : MonoBehaviour{
 		destinationFlag = Instantiate (flag, finalDestination, Quaternion.identity);
 	}
 
-	void Move (Vector3 movement) {
-		rigidBody.MovePosition (transform.position + movement);
-	}
-
+	/// <summary>
+	/// Stops map player movement.
+	/// </summary>
 	public void StopMoving(){
 		moving = false;
 		if (destinationFlag != null) {
@@ -97,15 +101,18 @@ public class MapPlayer : MonoBehaviour{
 		Debug.Log ("stopped");
 	}
 
-	// Movement
+	/// <summary>
+	/// Moves map player a step ahead.
+	/// </summary>
 	void Moving() {
 		if (moving) {
-			Move (movement);
+			rigidBody.MovePosition (transform.position + movement);
 
-			movement += Vector3.ClampMagnitude (finalDestination - transform.position, movementSpeed * Time.fixedDeltaTime / 8);
-			movement += Vector3.ClampMagnitude (randomAcceleration, movementSpeed * Time.fixedDeltaTime / 10);
+			movement += Vector3.ClampMagnitude (finalDestination - transform.position, movementSpeed * Time.fixedDeltaTime / 8); // Towards target position
+			movement += Vector3.ClampMagnitude (randomAcceleration, movementSpeed * Time.fixedDeltaTime / 10); // Makes the path curve around randomly
 			movement = Vector3.ClampMagnitude (movement, movementSpeed * Time.fixedDeltaTime);
 
+			// Apply new derail at random intervals 
 			if (derailTimer < randomDerailTime) {
 				derailTimer += Time.fixedDeltaTime;
 			} else {
@@ -120,6 +127,9 @@ public class MapPlayer : MonoBehaviour{
 		}
 	}
 
+	/// <summary>
+	/// Keeps track of which tile type the player is on for event generation and movement speed.
+	/// </summary>
 	void CheckTileUnder(){
 		RaycastHit hit;
 		if (Physics.Raycast (transform.position, Vector3.down, out hit, 100f, tileMask)) {
@@ -134,7 +144,11 @@ public class MapPlayer : MonoBehaviour{
 		}
 	}
 
+	/// <summary>
+	/// Updates movement speed according to weather and type of tile the player is on.
+	/// </summary>
 	void UpdateSpeed(){
+		slowMovementSpeed = originalMovementSpeed / 2f;
 		if (GameController.Instance.weatherState == "storm" && umbrella == false) {
 			movementSpeed = slowMovementSpeed / 2f;
 		} else if (tileType == "tile_mountain") {
@@ -144,6 +158,7 @@ public class MapPlayer : MonoBehaviour{
 		} else {
 			movementSpeed = originalMovementSpeed;
 		}
+		movementSpeed = movementSpeed * GameController.Instance.timeScale;
 	}
 
 //	//------------------------------------------------------------
