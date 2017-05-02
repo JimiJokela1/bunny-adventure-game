@@ -12,9 +12,11 @@ public class NPC : MonoBehaviour {
 	TextAsset dialogueText;
 	public string[] dialogueLines;
 
+
 	void Start() {
 		textField = GameObject.Find("TextFieldNPC").GetComponent<Text>();
 		imageField = GameObject.Find("ImageFieldNPC").GetComponent<Image>();
+
 	}
 
 
