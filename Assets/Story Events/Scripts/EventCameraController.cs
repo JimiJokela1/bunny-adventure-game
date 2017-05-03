@@ -8,6 +8,7 @@ public class EventCameraController : MonoBehaviour {
 	private Transform target;
 	public float smoothing = 5f; // Camera follow speed
 	public float zoomSpeed = 10f;
+	float fadeSpeed = 15f;
 
 
 	static Vector3 followOffset = Vector3.zero;
@@ -17,40 +18,28 @@ public class EventCameraController : MonoBehaviour {
 	string mode;
 
 	void Awake () {
-		target = GameObject.FindGameObjectWithTag ("Player").transform;
+		target = GameObject.Find ("EventPlayer").transform;
 
 		if (followOffset == Vector3.zero) {
 			followOffset = transform.position - target.position; // Calculate initial offset
 		}
 		eventZoomOffset = followOffset / 10f;
 		campZoomOffset = followOffset / 6f;
-		mode = "Follow";
+		mode = "FadeIn";
+		GetComponent<Camera> ().nearClipPlane = 50;
 		transform.position = target.position + followOffset;
 	}
 
 	void FixedUpdate () {
-		// Check if camera is orthographic or perspective and move it accordingly, specifically zoom is different
-		if (!GetComponent<Camera> ().orthographic) {
-			//if (mode == "Follow") {
-			//	targetCamPos = target.position + followOffset;
-			//}
-			transform.position = Vector3.Lerp (transform.position, targetCamPos, smoothing * Time.fixedDeltaTime);
-		} else {
-			if (mode == "Follow") {
-				if (GetComponent<Camera> ().orthographicSize < 10f) {
-					GetComponent<Camera> ().orthographicSize += Time.fixedDeltaTime * zoomSpeed;
-				}
-				targetCamPos = target.position + followOffset;
-				transform.position = Vector3.Lerp (transform.position, targetCamPos, smoothing * Time.fixedDeltaTime);
-			} else if (mode == "EventZoom") {
-				if (GetComponent<Camera> ().orthographicSize > 1.5f) {
-					GetComponent<Camera> ().orthographicSize -= Time.fixedDeltaTime * zoomSpeed;
-				}
-			} else if (mode == "CampZoom") {
-				if (GetComponent<Camera> ().orthographicSize > 4.5f) {
-					GetComponent<Camera> ().orthographicSize -= Time.fixedDeltaTime * zoomSpeed;
-				}
+		if (mode == "FadeIn") {
+			if (GetComponent<Camera> ().nearClipPlane > 0) {
+				GetComponent<Camera> ().nearClipPlane -= Time.fixedDeltaTime * fadeSpeed;
+			} else {
+				mode = "Follow";
 			}
+		} else if (mode == "Follow") {
+			targetCamPos = target.position + followOffset;
+			transform.position = Vector3.Lerp (transform.position, targetCamPos, smoothing * Time.fixedDeltaTime);
 		}
 	}
 

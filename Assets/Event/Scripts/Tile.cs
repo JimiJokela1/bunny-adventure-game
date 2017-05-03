@@ -27,7 +27,6 @@ public class Tile {
 		tileTemp.transform.position = tile.tilePosition;
 		tileTemp.transform.localScale = new Vector3 (tile.tileSizeX, tile.tileSizeZ, tile.tileSizeY);
 		tileTemp.GetComponent<Renderer> ().material = tile.tileMaterial;
-
 	}
 
 
