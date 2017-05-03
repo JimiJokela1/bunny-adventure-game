@@ -4,10 +4,16 @@ using UnityEngine;
 
 public class TriggerScript : MonoBehaviour {
 
-	public EventController eventController;
+	public EventController eventcontroller;
+	GameObject player;
+
+	void Start() {
+		player = GameObject.Find ("EventPlayer");
+	}
 
 	void OnTriggerEnter(Collider other) {
 		Debug.Log ("ontrigger osu");
-		eventController.TriggerEvent ();
+		eventcontroller.TriggerEvent ();
+
 	}
 }
