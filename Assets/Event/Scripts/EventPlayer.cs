@@ -53,7 +53,7 @@ public class EventPlayer : MonoBehaviour {
 				controlCooldownTimer += Time.fixedDeltaTime;
 			}
 		}
-		Explode ();
+//		Explode ();
 //		LedgeJump ();
 //		Jump ();
 		if (transform.position.y < -15f) {

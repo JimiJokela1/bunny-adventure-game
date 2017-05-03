@@ -9,7 +9,7 @@ public class DungeonGeneratorJimi : MonoBehaviour {
 	private Vector3 origin;
 	public int minLength = 10;
 	public int maxLength = 20;
-	public int height = 5;
+	public int wallHeight = 5;
 	public int numberOfRooms = 1;
 
 	public List<Material> wallMaterial = new List<Material> ();
@@ -45,7 +45,7 @@ public class DungeonGeneratorJimi : MonoBehaviour {
 		}
 	}
 
-	public void GenerateRoom(bool doors, Vector3 origin, int wallLengthX, int wallLengthZ) {
+	public void GenerateRoom(bool doors, Vector3 origin, int wallLengthX, int wallLengthZ, int height) {
 		GenerateWall (doors, origin, wallLengthX, height, dirX);
 		GenerateWall (doors, origin, wallLengthZ, height, dirZ);
 		GenerateWall (doors, new Vector3(origin.x + wallLengthX, origin.y, origin.z), wallLengthX, height, dirZ);
@@ -58,7 +58,7 @@ public class DungeonGeneratorJimi : MonoBehaviour {
 
 		for (int w = 0; w < dungWidth; w++) {
 			for (int l = 0; l < dungLenght; l++) {
-				GenerateRoom (true, new Vector3 (w * 15, 0, l * 15), Random.Range (minLength, maxLength), Random.Range (minLength, maxLength));
+				GenerateRoom (true, new Vector3 (w * 15, 0, l * 15), Random.Range (minLength, maxLength), Random.Range (minLength, maxLength), wallHeight);
 			}
 		}
 	}
@@ -67,14 +67,28 @@ public class DungeonGeneratorJimi : MonoBehaviour {
 		int dungWidth = 3;
 		int dungLenght = 3;
 		int roomSize = 15;
+		int levelWidth = dungWidth * roomSize / 2;
+		int levelLenght = dungLenght * roomSize / 2;
 
 		for (int w = 0; w < dungWidth; w++) {
 			for (int l = 0; l < dungLenght; l++) {
-				GenerateRoom (true, new Vector3 (w * roomSize - dungWidth * roomSize / 2, 0, l * roomSize - dungLenght * roomSize / 2), Random.Range (minLength, maxLength), Random.Range (minLength, maxLength));
+				GenerateRoom (true, new Vector3 (w * roomSize - levelWidth, 0, l * roomSize - levelLenght), Random.Range (minLength, maxLength), Random.Range (minLength, maxLength), wallHeight);
 			}
 		}
-		GenerateRoom (false, new Vector3 (-(roomSize * dungWidth / 2 + 5), 0, -(roomSize * dungLenght / 2 + 5)), dungWidth * roomSize + 10, dungLenght * roomSize + 10);
-		AddItems ("Unicorn Dust", dungWidth * roomSize / 2, dungLenght * roomSize / 2);
+
+		int towers = 20;
+		for (int i = 0; i < towers; i++) {
+			while (true) {
+				Vector3 pos = new Vector3 (Random.Range (-levelWidth - 20, levelWidth + 20), 0, Random.Range (-levelLenght - 20, levelLenght + 20));
+				if (!((pos.x < levelWidth + 10 && pos.x > -levelWidth - 10) || (pos.z < levelLenght + 10 && pos.z > -levelLenght - 10))) {
+					GenerateRoom (false, pos, Random.Range (minLength / 2, maxLength / 2), Random.Range (minLength / 2, maxLength / 2), wallHeight * 3);
+					break;
+				}
+			}
+		}
+
+		GenerateRoom (false, new Vector3 (-(levelWidth + 5), 0, -(levelLenght + 5)), dungWidth * roomSize + 10, dungLenght * roomSize + 10, wallHeight);
+		AddItems ("Unicorn Dust", levelWidth, levelLenght);
 	}
 
 	void AddItems(string itemName, float assetRangeX, float assetRangeZ){

@@ -8,7 +8,7 @@ public class EventCameraController : MonoBehaviour {
 	private Transform target;
 	public float smoothing = 5f; // Camera follow speed
 	public float zoomSpeed = 10f;
-	public float fadeSpeed = 1f;
+	float fadeSpeed = 15f;
 
 
 	static Vector3 followOffset = Vector3.zero;
