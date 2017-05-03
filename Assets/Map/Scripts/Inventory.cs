@@ -10,8 +10,12 @@ public class Inventory : MonoBehaviour {
 	GameObject inventoryItemPrefab;
 	List<GameObject> invItems;
 
-	void Start () {
+	void Awake(){
 		inventory = new List<string> ();
+	}
+
+	void Start () {
+		
 		inventoryBackground = GameObject.Find ("InventoryBackground");
 		inventoryBackground.SetActive (false);
 		inventoryItemPrefab = Resources.Load ("Prefabs/InventoryItem") as GameObject;
@@ -31,6 +35,14 @@ public class Inventory : MonoBehaviour {
 
 	public List<string> GetInv(){
 		return inventory;
+	}
+
+	public void LoadInv(List<string> inv){
+		foreach (string item in inv) {
+			if (item != null) {
+				AddToInv (item);
+			}
+		}
 	}
 
 	public void ShowInv(){

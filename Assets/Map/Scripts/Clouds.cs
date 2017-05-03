@@ -106,10 +106,10 @@ public class Clouds : MonoBehaviour {
 	/// </summary>
 	void MoveClouds(){
 		foreach (GameObject cloud in clouds) {
-			cloud.transform.position += winds[Random.Range(0, winds.Length)] * Time.deltaTime;
+			cloud.transform.position += winds[Random.Range(0, winds.Length)] * Time.deltaTime * GameController.Instance.timeScale;
 		}
 		foreach (GameObject cloud in stormClouds) {
-			cloud.transform.position += winds[Random.Range(0, winds.Length)] * Time.deltaTime;
+			cloud.transform.position += winds[Random.Range(0, winds.Length)] * Time.deltaTime * GameController.Instance.timeScale;
 		}
 	}
 

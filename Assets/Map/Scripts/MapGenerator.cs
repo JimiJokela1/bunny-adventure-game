@@ -9,6 +9,9 @@ public class MapGenerator : MonoBehaviour {
 	GameObject tileForest2;
 	GameObject tileWater1;
 	GameObject tileMountain1;
+	GameObject tileDesert1;
+	GameObject tileDesert2;
+
 	GameObject spriteMountain1;
 	GameObject spriteForest1;
 
@@ -21,11 +24,11 @@ public class MapGenerator : MonoBehaviour {
 	Dictionary<string, GameObject> tileTypeDict;
 	Transform tileHolder;
 	List<GameObject> terrainSprites;
+	List<GameObject> eventList;
 
 	public int randomEventAmount = 100;
 	Transform eventHolder;
 
-	List<string> biomeList = new List<string> ();
 
 	// Instance for singleton class, meaning there is only one of this object ever
 	public static MapGenerator Instance = null;
@@ -47,27 +50,25 @@ public class MapGenerator : MonoBehaviour {
 		tileForest2 = Resources.Load ("Prefabs/Tile_forest2") as GameObject;
 		tileWater1 = Resources.Load ("Prefabs/Tile_water1") as GameObject;
 		tileMountain1 = Resources.Load ("Prefabs/Tile_mountain1") as GameObject;
+		tileDesert1 = Resources.Load ("Prefabs/Tile_desert1") as GameObject;
+		tileDesert2 = Resources.Load ("Prefabs/Tile_desert2") as GameObject;
 
 		randomEvent = Resources.Load ("Prefabs/RandomEvent") as GameObject;
 
 		terrainSprites = new List<GameObject> ();
+		eventList = new List<GameObject> ();
 
 		tilemap = new GameObject[levelSize, levelSize];
 		tileTypeDict = new Dictionary<string, GameObject> ();
-		tileTypeDict.Add ("Forest1", tileForest1);
-		tileTypeDict.Add ("Forest2", tileForest2);
-		tileTypeDict.Add ("Water1", tileWater1);
-		tileTypeDict.Add ("Mountain1", tileMountain1);
+		tileTypeDict.Add ("tile_land1", tileForest1);
+		tileTypeDict.Add ("tile_land2", tileForest2);
+		tileTypeDict.Add ("tile_water1", tileWater1);
+		tileTypeDict.Add ("tile_mountain1", tileMountain1);
+		tileTypeDict.Add ("tile_desert1", tileDesert1);
+		tileTypeDict.Add ("tile_desert2", tileDesert2);
 
 		tileMask = LayerMask.GetMask ("TileMask");
 
-		biomeList.Add ("Forest");
-		biomeList.Add ("Mountains");
-		biomeList.Add ("Desert");
-		biomeList.Add ("Beach");
-	}
-
-	void Start(){
 	}
 
 	/// <summary>
@@ -81,6 +82,10 @@ public class MapGenerator : MonoBehaviour {
 			Destroy (sprite);
 		}
 		terrainSprites.Clear ();
+		foreach (GameObject eventObject in eventList) {
+			Destroy (eventObject);
+		}
+		eventList.Clear ();
 		GetComponent<Clouds> ().DestroyClouds ();
 
 		int startAreaSize = 3;
@@ -90,9 +95,9 @@ public class MapGenerator : MonoBehaviour {
 			for (int h = 0; h < levelSize; h++) {
 				int boundary = levelSize / 2 - waterWidth;
 				if (location.x < startAreaSize && location.x > -startAreaSize && location.z < startAreaSize && location.z > -startAreaSize) {
-					tilemap [w, h] = Instantiate (RandomTile("Forest1", "Forest2", "Water1"), location, Quaternion.Euler (90, 0, 0), tileHolder);
+					tilemap [w, h] = Instantiate (RandomTile("tile_land1", "tile_land2", "tile_water1"), location, Quaternion.Euler (90, 0, 0), tileHolder);
 				} else if ((location.x > boundary || location.x < -boundary) || (location.z > boundary || location.z < -boundary)) {
-					tilemap [w, h] = Instantiate (tileTypeDict ["Water1"], location, Quaternion.Euler (90, 0, 0), tileHolder);
+					tilemap [w, h] = Instantiate (tileTypeDict ["tile_water1"], location, Quaternion.Euler (90, 0, 0), tileHolder);
 				} else {
 					tilemap [w, h] = Instantiate (RandomTile(), location, Quaternion.Euler (90, 0, 0), tileHolder);
 
@@ -108,6 +113,7 @@ public class MapGenerator : MonoBehaviour {
 		PlaceSprites ();
 		PlaceEvents (randomEventAmount);
 		GetComponent<Clouds> ().PlaceClouds ();
+//		Debug.Log (tilemap [50, 50].tag);
 	}
 
 	GameObject RandomTile(string choice1 = null, string choice2 = null, string choice3 = null, string choice4 = null){
@@ -122,29 +128,29 @@ public class MapGenerator : MonoBehaviour {
 					if (!allChoices && choice1 != null) {
 						return tileTypeDict [choice1];
 					} else {
-						return tileTypeDict ["Forest1"];
+						return tileTypeDict ["tile_land1"];
 					}
 				case 1:
 					if (!allChoices && choice2 != null) {
 						return tileTypeDict [choice2];
 					} else {
-						return tileTypeDict ["Forest2"];
+						return tileTypeDict ["tile_land2"];
 					}
 				case 2:
 					if (!allChoices && choice3 != null) {
 						return tileTypeDict [choice3];
 					} else {
-						return tileTypeDict ["Water1"];
+						return tileTypeDict ["tile_water1"];
 					}
 				case 3:
 					if (!allChoices && choice4 != null) {
 						return tileTypeDict [choice4];
 					} else {
-						return tileTypeDict ["Mountain1"];
+						return tileTypeDict ["tile_mountain1"];
 					}
 
 				case 4:
-//				return tileTypeDict ["Forest1"];
+//				return tileTypeDict ["tile_land1"];
 					break;
 				default:
 					break;
@@ -152,69 +158,11 @@ public class MapGenerator : MonoBehaviour {
 		}
 	}
 
-	public void GenerateBiomesMap(){
-		foreach (GameObject tile in tilemap) {
-			Destroy (tile);
-		}
-		foreach (GameObject sprite in terrainSprites) {
-			Destroy (sprite);
-		}
-		terrainSprites.Clear ();
-		GetComponent<Clouds> ().DestroyClouds ();
-
-		List<GameObject> openTiles = new List<GameObject> ();
-
-		Vector3 location = new Vector3 (-levelSize / 2 + 0.5f, 0, -levelSize / 2 + 0.5f);
-		// Place initial tiles
-		for (int w = 0; w < levelSize; w++) {
-			for (int h = 0; h < levelSize; h++) {
-				int boundary = levelSize / 2 - waterWidth;
-				if ((location.x > boundary || location.x < -boundary) || (location.z > boundary || location.z < -boundary)) {
-					tilemap [w, h] = Instantiate (tileTypeDict ["Water1"], location, Quaternion.Euler (90, 0, 0), tileHolder);
-				} else {
-					tilemap [w, h] = Instantiate (tileTypeDict ["Forest1"], location, Quaternion.Euler (90, 0, 0), tileHolder);
-					openTiles.Add (tilemap [w, h]);
-				}
-
-				location += new Vector3 (1, 0, 0);
-			}
-			location = new Vector3 (-levelSize / 2 + 0.5f, 0, location.z);
-			location += new Vector3 (0, 0, 1);
-		}
-
-		int mountainBiomes = levelSize / 20;
-		int forestBiomes = levelSize / 10;
-		for (int w = 0; w < levelSize; w++) {
-			for (int h = 0; h < levelSize; h++) {
-				foreach (GameObject openTile in openTiles) {
-					if (tilemap [w, h].gameObject.Equals (openTile)) {
-						int chance = Random.Range (0, 100);
-						if (chance < 5 && mountainBiomes > 0) {
-							mountainBiomes--;
-							Vector3 temp = tilemap [w, h].transform.position;
-							Destroy (tilemap [w, h]);
-							tilemap [w, h] = Instantiate (tileTypeDict ["Mountain1"], temp, Quaternion.Euler (90, 0, 0), tileHolder);
-
-						}
-					}
-				}
-			}
-		}
-	}
-
-	void GenerateMountainsBiome(int size){
-
-	}
-
-	void GenerateForestBiome(int size){
-
-	}
-
 	/// <summary>
 	/// Looks at each tile and it's neighbours. If lots of one tile type surrounds the tile, changes to that tile type.
 	/// Smooths the map's look, resulting in more uniform areas.
 	/// </summary>
-	void Smoothing () {
+	public void Smoothing () {
 		for (int w = 1; w < tilemap.GetLength (0) - 1; w++) {
 			for (int h = 1; h < tilemap.GetLength (1) - 1; h++) {
 				
@@ -242,9 +190,9 @@ public class MapGenerator : MonoBehaviour {
 						land1Tiles++;
 					} else if (tile.tag == "tile_land2") {
 						land2Tiles++;
-					} else if (tile.tag == "tile_water") {
+					} else if (tile.tag == "tile_water1") {
 						waterTiles++;
-					} else if (tile.tag == "tile_mountain") {
+					} else if (tile.tag == "tile_mountain1") {
 						mountainTiles++;
 					}
 				}
@@ -254,24 +202,24 @@ public class MapGenerator : MonoBehaviour {
 
 				if (mountainTiles > 4) {
 					Destroy (tilemap [w, h]);
-					tilemap [w, h] = Instantiate (tileTypeDict ["Mountain1"], temp, Quaternion.Euler (90, 0, 0), tileHolder);
+					tilemap [w, h] = Instantiate (tileTypeDict ["tile_mountain1"], temp, Quaternion.Euler (90, 0, 0), tileHolder);
 				} else if (waterTiles > 4) {
 					Destroy (tilemap [w, h]);
-					tilemap [w, h] = Instantiate (tileTypeDict ["Water1"], temp, Quaternion.Euler (90, 0, 0), tileHolder);
+					tilemap [w, h] = Instantiate (tileTypeDict ["tile_water1"], temp, Quaternion.Euler (90, 0, 0), tileHolder);
 				} else if (land1Tiles > 4) {
 					Destroy (tilemap [w, h]);
-					tilemap [w, h] = Instantiate (tileTypeDict ["Forest1"], temp, Quaternion.Euler (90, 0, 0), tileHolder);
+					tilemap [w, h] = Instantiate (tileTypeDict ["tile_land1"], temp, Quaternion.Euler (90, 0, 0), tileHolder);
 				} else if (land2Tiles > 4) {
 					Destroy (tilemap [w, h]);
-					tilemap [w, h] = Instantiate (tileTypeDict ["Forest2"], temp, Quaternion.Euler (90, 0, 0), tileHolder);
-				} else if (tilemap [w, h].tag == "tile_water" && waterTiles < 4) {
+					tilemap [w, h] = Instantiate (tileTypeDict ["tile_land2"], temp, Quaternion.Euler (90, 0, 0), tileHolder);
+				} else if (tilemap [w, h].tag == "tile_water1" && waterTiles < 4) {
 					Destroy (tilemap [w, h]);
 					if (land1Tiles > land2Tiles && land1Tiles > mountainTiles) {
-						tilemap [w, h] = Instantiate (tileTypeDict ["Forest1"], temp, Quaternion.Euler (90, 0, 0), tileHolder);
+						tilemap [w, h] = Instantiate (tileTypeDict ["tile_land1"], temp, Quaternion.Euler (90, 0, 0), tileHolder);
 					} else if (land2Tiles > land1Tiles && land2Tiles > mountainTiles) {
-						tilemap [w, h] = Instantiate (tileTypeDict ["Forest2"], temp, Quaternion.Euler (90, 0, 0), tileHolder);
+						tilemap [w, h] = Instantiate (tileTypeDict ["tile_land2"], temp, Quaternion.Euler (90, 0, 0), tileHolder);
 					} else {
-						tilemap [w, h] = Instantiate (tileTypeDict ["Mountain1"], temp, Quaternion.Euler (90, 0, 0), tileHolder);
+						tilemap [w, h] = Instantiate (tileTypeDict ["tile_mountain1"], temp, Quaternion.Euler (90, 0, 0), tileHolder);
 					}
 				}
 			}
@@ -284,7 +232,7 @@ public class MapGenerator : MonoBehaviour {
 	void PlaceSprites(){
 		for (int w = 1; w < tilemap.GetLength (0) - 1; w++) {
 			for (int h = 1; h < tilemap.GetLength (1) - 1; h++) {
-				if (tilemap [w, h].tag == "tile_mountain") {
+				if (tilemap [w, h].tag == "tile_mountain1") {
 					Vector3 location = new Vector3 (tilemap [w, h].transform.position.x, 0, tilemap [w, h].transform.position.z + Random.Range (-0.4f, 0.4f));
 					GameObject tempMountain = Instantiate (spriteMountain1, location, Quaternion.identity, tileHolder);
 					tempMountain.transform.localScale = new Vector3 (Random.Range (1f, 3f), Random.Range (2f, 3f), 1f);
@@ -313,14 +261,30 @@ public class MapGenerator : MonoBehaviour {
 					RaycastHit hit;
 					if (Physics.Raycast (location, Vector3.down, out hit, 100f, tileMask)) {
 						string tileType = hit.collider.tag;
-						if (tileType != "tile_water") {
-							Instantiate (randomEvent, location, Quaternion.identity, eventHolder);
+						if (tileType != "tile_water1") {
+							GameObject temp = Instantiate (randomEvent, location, Quaternion.identity, eventHolder);
+							eventList.Add (temp);
 							success = true;
 						}
 					}
 				}
 			}
 		}
+	}
+
+	public void LoadMap(string[] tiletags){
+		Vector3 location = new Vector3 (-levelSize / 2 + 0.5f, 0, -levelSize / 2 + 0.5f);
+		for (int w = 0; w < levelSize; w++) {
+			for (int h = 0; h < levelSize; h++) {
+				tilemap[w, h] = Instantiate (tileTypeDict[tiletags[w * 100 + h]], location, Quaternion.Euler (90, 0, 0), tileHolder);
+				location += new Vector3 (1, 0, 0);
+			}
+			location = new Vector3 (-levelSize / 2 + 0.5f, 0, location.z);
+			location += new Vector3 (0, 0, 1);
+		}
+		PlaceSprites ();
+		PlaceEvents (randomEventAmount);
+		GetComponent<Clouds> ().PlaceClouds ();
 	}
 
 //	// Old
