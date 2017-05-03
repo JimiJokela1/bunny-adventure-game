@@ -66,7 +66,7 @@ public class DungeonGeneratorJimi : MonoBehaviour {
 	public void GenerateUnicornDungeon(){
 		int dungWidth = 3;
 		int dungLenght = 3;
-		int roomSize = 15;
+		int roomSize = minLength + maxLength / 2;
 		int levelWidth = dungWidth * roomSize / 2;
 		int levelLenght = dungLenght * roomSize / 2;
 
@@ -76,11 +76,13 @@ public class DungeonGeneratorJimi : MonoBehaviour {
 			}
 		}
 
+
 		int towers = 20;
 		for (int i = 0; i < towers; i++) {
 			while (true) {
+				int axis = Random.Range (0, 2);
 				Vector3 pos = new Vector3 (Random.Range (-levelWidth - 20, levelWidth + 20), 0, Random.Range (-levelLenght - 20, levelLenght + 20));
-				if (!((pos.x < levelWidth + 10 && pos.x > -levelWidth - 10) || (pos.z < levelLenght + 10 && pos.z > -levelLenght - 10))) {
+				if ((axis == 0 && !(pos.x < levelWidth + 10 && pos.x > -levelWidth - 10)) || (axis == 1 && !(pos.z < levelLenght + 10 && pos.z > -levelLenght - 10))) {
 					GenerateRoom (false, pos, Random.Range (minLength / 2, maxLength / 2), Random.Range (minLength / 2, maxLength / 2), wallHeight * 3);
 					break;
 				}

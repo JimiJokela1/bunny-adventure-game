@@ -194,8 +194,10 @@ public class GameController : MonoBehaviour {
 
 					if (eventTriggerer.storyEventName == "courthouse1") {
 						SceneManager.LoadScene ("scene_courthouse");
-					} else if (eventTriggerer.storyEventName == "courthouse2") {
-						// ...
+					} else if (eventTriggerer.storyEventName == "unicorn") {
+						SceneManager.LoadScene ("scene_unicorn");
+					} else if (eventTriggerer.storyEventName == "owl") {
+						SceneManager.LoadScene ("scene_owl");
 					}
 				}
 				break;
