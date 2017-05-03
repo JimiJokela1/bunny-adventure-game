@@ -97,6 +97,7 @@ public class GameController : MonoBehaviour {
 		mapCanvasObjects.Add (generateButton.gameObject);
 		mapCanvasObjects.Add (eventTestButton.gameObject);
 		mapCanvasObjects.Add (spawnCloudsButton.gameObject);
+		mapCanvasObjects.Add (smoothMapButton.gameObject);
 		mapCanvasObjects.Add (umbrellaButton.gameObject);
 		mapCanvasObjects.Add (campButton.gameObject);
 		mapCanvasObjects.Add (saveButton.gameObject);
