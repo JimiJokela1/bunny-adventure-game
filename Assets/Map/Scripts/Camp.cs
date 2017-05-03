@@ -20,12 +20,14 @@ public class Camp : MonoBehaviour {
 		// Activate all the things
 		Camera.main.GetComponent<CameraController>().CampZoom();
 		GameController.Instance.GetComponent<Inventory> ().ShowInv ();
+		GameController.Instance.timeScale = 0.3f;
 	}
 
 	public void PackUpCamp(){
 		// Deactivate all the things
 		Camera.main.GetComponent<CameraController>().Unzoom();
 		GameController.Instance.GetComponent<Inventory> ().HideInv ();
+		GameController.Instance.timeScale = 1f;
 	}
 
 	void OnInventoryButtonClick(){

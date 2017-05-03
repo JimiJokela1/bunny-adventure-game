@@ -8,6 +8,7 @@ public class EventTriggerer : MonoBehaviour {
 
 	string tileType;
 	public string eventType;
+	public string storyEventName;
 	float triggerDistance = 0.5f;
 
 	GameObject player;
@@ -62,6 +63,9 @@ public class EventTriggerer : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Tests event trigger when button clicked.
+	/// </summary>
 	public void TestTriggerEvent(){
 		RaycastHit hit;
 		if (Physics.Raycast (player.transform.position, Vector3.down, out hit, 100f, tileMask)) {
