@@ -94,14 +94,18 @@ public class GameController : MonoBehaviour {
 		rainParticles.gameObject.SetActive (false);
 
 		mapCanvasObjects = new List<GameObject> ();
-		mapCanvasObjects.Add (generateButton.gameObject);
-		mapCanvasObjects.Add (eventTestButton.gameObject);
-		mapCanvasObjects.Add (spawnCloudsButton.gameObject);
-		mapCanvasObjects.Add (smoothMapButton.gameObject);
 		mapCanvasObjects.Add (umbrellaButton.gameObject);
 		mapCanvasObjects.Add (campButton.gameObject);
 		mapCanvasObjects.Add (saveButton.gameObject);
 
+//		mapCanvasObjects.Add (generateButton.gameObject);
+		mapCanvasObjects.Add (eventTestButton.gameObject);
+//		mapCanvasObjects.Add (spawnCloudsButton.gameObject);
+//		mapCanvasObjects.Add (smoothMapButton.gameObject);
+
+		generateButton.gameObject.SetActive (false);
+		spawnCloudsButton.gameObject.SetActive (false);
+		smoothMapButton.gameObject.SetActive (false);
 
 		ChangeGameState (GAMESTATE_START);
 	}
