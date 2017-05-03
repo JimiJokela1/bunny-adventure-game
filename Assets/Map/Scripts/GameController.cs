@@ -247,10 +247,6 @@ public class GameController : MonoBehaviour {
 		}
 	}
 
-	public void AddItemToInventory(string itemName){
-		player.GetComponent<PlayerController> ().AddToInv (itemName);
-	}
-
 	/// <summary>
 	/// Sets the weather.
 	/// </summary>

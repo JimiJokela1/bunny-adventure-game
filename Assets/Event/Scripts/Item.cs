@@ -8,13 +8,17 @@ public class Item : MonoBehaviour {
 
 	public void GenerateItem(string itemName) {
 		this.itemName = itemName;
+		if (itemName != "Unicorn Dust") {
+			GetComponentInChildren<ParticleSystem> ().gameObject.SetActive (false);
+		}
 	}
 
 
 	void OnTriggerEnter(Collider collider){
 		if (collider.gameObject.name == "EventPlayer") {
 			Debug.Log ("Picked up item" + itemName);
-			GameController.Instance.AddItemToInventory (itemName);
+//			GameController.Instance.AddItemToInventory (itemName);
+			PlayerController.Instance.AddToInv (itemName);
 			Destroy (gameObject);
 		}
 	}

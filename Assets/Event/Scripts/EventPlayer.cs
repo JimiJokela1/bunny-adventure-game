@@ -53,8 +53,8 @@ public class EventPlayer : MonoBehaviour {
 				controlCooldownTimer += Time.fixedDeltaTime;
 			}
 		}
-//		Explode ();
-		LedgeJump ();
+		Explode ();
+//		LedgeJump ();
 //		Jump ();
 		if (transform.position.y < -15f) {
 			rigidBody.velocity = Vector3.zero;
@@ -118,9 +118,9 @@ public class EventPlayer : MonoBehaviour {
 
 	void LedgeJump(){
 		RaycastHit hit;
-		if (Physics.Raycast (transform.position, Vector3.forward, out hit,  1f)) {
+		if (Physics.Raycast (transform.position, transform.forward, out hit,  1f)) {
 			if (Input.GetAxis ("Jump") > 0.1f && controlCooldown == false) {
-				if (hit.collider.transform.position.y + hit.collider.transform.localScale.y / 2 - transform.position.y < 3f) {
+				if (hit.collider.transform.position.y + hit.collider.transform.localScale.y / 2 - transform.position.y < 5f) {
 					rigidBody.AddForce (jumpStrenght * Vector3.up + Vector3.forward, ForceMode.Impulse);
 					controlCooldown = true;
 				}
