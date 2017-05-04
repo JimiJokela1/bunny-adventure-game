@@ -17,6 +17,9 @@ public class Item : MonoBehaviour {
 	void OnTriggerEnter(Collider collider){
 		if (collider.gameObject.name == "EventPlayer") {
 			Debug.Log ("Picked up item" + itemName);
+			if (itemName == "Unicorn Dust") {
+				GameObject.Find ("DungeonGenerator").GetComponent<DungeonGeneratorJimi> ().dustLeft--;
+			}
 //			GameController.Instance.AddItemToInventory (itemName);
 			PlayerController.Instance.AddToInv (itemName);
 			Destroy (gameObject);

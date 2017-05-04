@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Holds map tiles so we can return to the same map after an event
+// Holds random events so we can reactivate them
 public class EventHolder : MonoBehaviour {
 
 	// Instance for singleton class, meaning there is only one of this object ever

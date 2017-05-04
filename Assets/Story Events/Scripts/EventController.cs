@@ -31,4 +31,7 @@ public class EventController : MonoBehaviour {
 		player.transform.position = position;
 	}
 
+	public void CompleteEvent(int progressID){
+		PlayerController.Instance.AddToProgress (progressID);
+	}
 }
