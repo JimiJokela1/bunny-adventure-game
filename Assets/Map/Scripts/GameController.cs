@@ -19,7 +19,7 @@ public class GameController : MonoBehaviour {
 		}
 	}
 
-	// Game state determines what scene, objects, ui, controls are active... ideally
+	// Game state determines what scene, objects, ui, controls are active
 	public int gameState;
 	public int oldGameState;
 	public const int GAMESTATE_START = 0;
@@ -30,7 +30,6 @@ public class GameController : MonoBehaviour {
 
 	public string eventTileType;
 	GameObject player;
-//	EventTriggerer eventTriggerer;
 	ParticleSystem rainParticles;
 	public string weatherState = "clear";
 
@@ -54,6 +53,9 @@ public class GameController : MonoBehaviour {
 	Button returnToMapButton;
 	Button umbrellaButton;
 	Button campButton;
+	InputField console;
+	Dropdown commandDropdown;
+
 	public List<GameObject> mapCanvasObjects; // List for canvas objects that should be active only on map
 	public bool mouseOverButton = false; // tells if mouse pointer is over a button
 
@@ -76,7 +78,14 @@ public class GameController : MonoBehaviour {
 
 		saveButton = GameObject.Find ("SaveButton").GetComponent<Button> ();
 		saveButton.onClick.AddListener (() => SaveGame ());
+		console = GameObject.Find ("Console").GetComponent<InputField> ();
+		console.onEndEdit.AddListener ((value) => ConsoleInput(value));
+		console.gameObject.SetActive (false);
 
+//		commandDropdown = GameObject.Find ("CommandDropdown").GetComponent<Dropdown> ();
+//		commandDropdown.onValueChanged.AddListener (delegate {
+//			CommandDropdownHandler(commandDropdown);
+//		});
 
 
 		// Gameplay buttons
@@ -111,6 +120,8 @@ public class GameController : MonoBehaviour {
 	}
 
 	void Update(){
+		HandleConsole ();
+
 		SkyLightUpdate ();
 		ChangeLight ();
 		RandomWeather ();
@@ -134,8 +145,9 @@ public class GameController : MonoBehaviour {
 	/// Changes the state of the game.
 	/// </summary>
 	/// <param name="newGameState">New game state: see constants.</param>
+	/// <param name="storyScene">Story scene to change to, used for console commands only.</param>
 	/// <param name="eventTriggerer">If an EventTriggerer is changing the game state.</param>
-	public void ChangeGameState (int newGameState, EventTriggerer eventTriggerer = null)
+	public void ChangeGameState (int newGameState, string storyScene = null, EventTriggerer eventTriggerer = null)
 	{
 		oldGameState = gameState;
 		gameState = newGameState;
@@ -165,6 +177,7 @@ public class GameController : MonoBehaviour {
 				break;
 
 			case GAMESTATE_RANDOMEVENT:
+				console.gameObject.SetActive (false);
 				if (eventTriggerer != null) {
 					returnToMapButton.gameObject.SetActive (true);
 					eventTileType = eventTriggerer.GetEventTileType ();
@@ -185,6 +198,7 @@ public class GameController : MonoBehaviour {
 				break;
 
 			case GAMESTATE_STORYEVENT:
+				console.gameObject.SetActive (false);
 				if (eventTriggerer != null) {
 					if (oldGameState == GAMESTATE_MAP) {
 						player.GetComponent<MapPlayer> ().StopMoving ();
@@ -197,19 +211,90 @@ public class GameController : MonoBehaviour {
 						EventHolder.Instance.gameObject.SetActive (false);
 					}
 
-					if (eventTriggerer.storyEventName == "courthouse1") {
-						SceneManager.LoadScene ("scene_courthouse");
-					} else if (eventTriggerer.storyEventName == "unicorn") {
-						SceneManager.LoadScene ("scene_unicorn");
-					} else if (eventTriggerer.storyEventName == "owl") {
-						SceneManager.LoadScene ("scene_owl");
+					SceneManager.LoadScene ("scene_" + eventTriggerer.storyEventName);
+//					if (eventTriggerer.storyEventName == "courthouse1") {
+//						SceneManager.LoadScene ("scene_courthouse");
+//					} else if (eventTriggerer.storyEventName == "unicorn") {
+//						SceneManager.LoadScene ("scene_unicorn");
+//					} else if (eventTriggerer.storyEventName == "owl") {
+//						SceneManager.LoadScene ("scene_owl");
+//					}
+				} else if (storyScene != null) {
+					if (oldGameState == GAMESTATE_MAP) {
+						player.GetComponent<MapPlayer> ().StopMoving ();
+						foreach (GameObject o in mapCanvasObjects) {
+							o.SetActive (false);
+						}
+						directionalLight.gameObject.SetActive (false);
+						player.SetActive (false);
+						TileHolder.Instance.gameObject.SetActive (false);
+						EventHolder.Instance.gameObject.SetActive (false);
 					}
+
+					SceneManager.LoadScene (storyScene);
 				}
 				break;
 				
 			default:
 				break;
 		}
+	}
+
+	void HandleConsole() {
+		if (Input.GetKeyDown (KeyCode.K) && !console.gameObject.activeSelf) {
+			console.gameObject.SetActive (true);
+			console.interactable = true;
+			console.ActivateInputField ();
+		} else if (Input.GetKeyDown (KeyCode.K) && console.gameObject.activeSelf) {
+			console.gameObject.SetActive (false);
+		}
+	}
+
+	void CommandDropdownHandler(Dropdown dropdown){
+		Debug.Log (dropdown.value);
+	}
+
+	public void ConsoleInput(string command) {
+		Debug.Log ("Console: " + command);
+
+		switch (command) {
+			case "test":
+				Debug.Log ("test command");
+				break;
+			case "unicorn":
+				if (SceneManager.GetActiveScene ().name != "scene_unicorn") {
+					ChangeGameState (GAMESTATE_STORYEVENT, "scene_unicorn");
+				}
+				break;
+			case "owl":
+				if (SceneManager.GetActiveScene ().name != "scene_owl") {
+					ChangeGameState (GAMESTATE_STORYEVENT, "scene_owl");
+				}
+				break;
+			case "panda":
+				if (SceneManager.GetActiveScene ().name != "scene_panda") {
+					ChangeGameState (GAMESTATE_STORYEVENT, "scene_panda");
+				}
+				break;
+			case "courthouse1":
+				if (SceneManager.GetActiveScene ().name != "scene_courthouse1") {
+					ChangeGameState (GAMESTATE_STORYEVENT, "scene_courthouse1");
+				}
+				break;
+			case "courthouse2":
+				if (SceneManager.GetActiveScene ().name != "scene_courthouse2") {
+					ChangeGameState (GAMESTATE_STORYEVENT, "scene_courthouse2");
+				}
+				break;
+			case "random":
+				if (SceneManager.GetActiveScene ().name != "scene_random") {
+					ChangeGameState (GAMESTATE_STORYEVENT, "scene_random");
+				}
+				break;
+			default:
+				break;
+		}
+						console.ActivateInputField ();
 	}
 
 	public int GetGameState(){
@@ -442,7 +527,7 @@ public class GameController : MonoBehaviour {
 
 			SaveData saveData = new SaveData ();
 			saveData.progress = player.GetComponent<PlayerController> ().progress;
-			saveData.charactersMet = player.GetComponent<PlayerController> ().charactersMet;
+//			saveData.charactersMet = player.GetComponent<PlayerController> ().charactersMet;
 
 			for(int w = 0; w < MapGenerator.Instance.tilemap.GetLength(0); w++){
 				for(int h = 0; h < MapGenerator.Instance.tilemap.GetLength(1); h++){
@@ -476,7 +561,7 @@ public class GameController : MonoBehaviour {
 				file.Close ();
 
 				player.GetComponent<PlayerController> ().progress = saveData.progress;
-				player.GetComponent<PlayerController> ().charactersMet = saveData.charactersMet;
+//				player.GetComponent<PlayerController> ().charactersMet = saveData.charactersMet;
 
 				MapGenerator.Instance.LoadMap(saveData.tileTypes);
 
@@ -504,14 +589,14 @@ public class GameController : MonoBehaviour {
 [System.Serializable]
 class SaveData
 {
-	public List<string> progress;
+	public List<int> progress;
 	public List<string> charactersMet;
 	public string[] tileTypes;
 	public float[] playerPosition;
 	public List<string> inventory;
 
 	public SaveData(){
-		progress = new List<string> ();
+		progress = new List<int> ();
 		charactersMet = new List<string> ();
 		inventory = new List<string> ();
 		playerPosition = new float[3];

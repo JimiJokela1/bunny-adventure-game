@@ -18,13 +18,21 @@ public class PlayerController : MonoBehaviour {
 
 	MapPlayer mapPlayer;
 
-	public List<string> progress;
-	public List<string> charactersMet;
-	public List<string> questsDone;
+	public const int TUTORIAL = 0;
+	public const int COURTHOUSE_FIRST = 1;
+	public const int UNICORN = 2;
+	public const int CENTAUR = 3;
+	public const int PANDA = 4;
+	public const int COURTHOUSE_FINAL = 5;
+
+
+	public List<int> progress;
+//	public List<string> charactersMet;
+//	public List<string> questsDone;
 
 	void Start(){
 		mapPlayer = gameObject.GetComponent<MapPlayer> ();
-		charactersMet = new List<string> ();
+//		charactersMet = new List<string> ();
 	}
 
 	void Update(){

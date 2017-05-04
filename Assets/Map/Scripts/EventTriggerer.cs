@@ -53,9 +53,9 @@ public class EventTriggerer : MonoBehaviour {
 					triggerTimer += Time.deltaTime;
 				} else {
 					if (eventType == "RandomEvent") {
-						GameController.Instance.ChangeGameState (GameController.GAMESTATE_RANDOMEVENT, this);
+						GameController.Instance.ChangeGameState (GameController.GAMESTATE_RANDOMEVENT, eventTriggerer: this);
 					} else if (eventType == "StoryEvent") {
-						GameController.Instance.ChangeGameState (GameController.GAMESTATE_STORYEVENT, this);
+						GameController.Instance.ChangeGameState (GameController.GAMESTATE_STORYEVENT, eventTriggerer: this);
 					}
 					gameObject.SetActive (false);
 				}
