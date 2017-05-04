@@ -27,6 +27,7 @@ public class DialogueController : MonoBehaviour
 	private string activeNPC;
 	TextAsset options;
 	string[] optionsArray;
+	bool option;
 
 
 	void Start ()
@@ -47,7 +48,7 @@ public class DialogueController : MonoBehaviour
 	void Update ()
 	{
 		//Debug.Log ("upadate");
-		if (Input.GetMouseButtonDown (0) && isDialogueOn == true) {
+		if (Input.GetMouseButtonDown (0) && isDialogueOn == true && option == false) {
 			ProgressDialogue ();
 			Debug.Log ("Pressed");
 		}
@@ -55,13 +56,13 @@ public class DialogueController : MonoBehaviour
 	}
 
 
-
+	//dialogue triggers from the map, load text assets and pictures
 	public void DialogueTriggered (string name)
 	{
 		activeNPC = name;
 		lineNumberNPC = 0;
 		lineNumberPlayer = 0;
-		Debug.Log (name + "dialogue");
+		Debug.Log (name + " dialogue");
 		eventPlayer.canMove = false;
 		ShowUI ();
 		imageFieldPlayer.sprite = Resources.Load<Sprite> ("bunny");
@@ -74,6 +75,7 @@ public class DialogueController : MonoBehaviour
 		playerTurn = true;
 	}
 
+	//load new text assets according to choise made
 	public void OptionTriggered (string name)
 	{
 		lineNumberNPC = 0;
@@ -88,15 +90,13 @@ public class DialogueController : MonoBehaviour
 
 	}
 
-
-	/// <summary>
-	/// Shows the dialogue.
-	/// </summary>
+	//updates textfields and checks if dialogue forks
 	public void ProgressDialogue ()
 	{
 		
 		if (lineNumberPlayer < dialoguePlayer.Length) {
-			Debug.Log (lineNumberPlayer + "   " + dialoguePlayer [lineNumberPlayer]);
+			//Debug.Log (lineNumberPlayer + "   " + dialoguePlayer [lineNumberPlayer]);
+			//Debug.Log (lineNumberNPC + "   " + dialogueNPC [lineNumberNPC]);
 			if (dialoguePlayer [lineNumberPlayer].Equals("!")) {
 				Debug.Log ("option trigger");
 				options = Resources.Load<TextAsset> (activeNPC + "_options");
@@ -104,6 +104,7 @@ public class DialogueController : MonoBehaviour
 				ButtonDOption1.GetComponentInChildren<Text> ().text = optionsArray [0];
 				ButtonDOption2.GetComponentInChildren<Text> ().text = optionsArray [1];
 				ShowButtons ();
+				option = true;
 
 			}
 		}
@@ -172,6 +173,7 @@ public class DialogueController : MonoBehaviour
 		Debug.Log ("kutsu " + activeNPC + "a");
 		OptionTriggered (activeNPC + "a");
 		HideButtons ();
+		option = false;
 	}
 
 	public void OptionB ()
@@ -179,6 +181,7 @@ public class DialogueController : MonoBehaviour
 		Debug.Log ("kutsu " + activeNPC + "b");
 		OptionTriggered (activeNPC + "b");
 		HideButtons ();
+		option = false;
 	}
 
 	/// <summary>
