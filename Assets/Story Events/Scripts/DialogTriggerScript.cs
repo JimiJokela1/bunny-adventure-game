@@ -8,8 +8,8 @@ public class DialogTriggerScript : MonoBehaviour {
 	string name;
 
 	void OnTriggerEnter(Collider other) {
-		Debug.Log ("dial trigger osu" + name);
 		name = this.gameObject.name;
+		Debug.Log ("dialogue trigger osu " + name);
 		diagController.DialogueTriggered (name);
 	}
 }

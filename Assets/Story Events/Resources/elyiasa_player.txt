@@ -1,0 +1,6 @@
+Bunny: “Yes?”
+Bunny: “Nothing”
+Bunny: “I really need this armor”
+Bunny: “What?”
+Bunny: “All right. Thanks, Eylias!”
+Bunny: “I won’t. Bye Eylias!”
