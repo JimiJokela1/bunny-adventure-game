@@ -9,7 +9,7 @@ public class EventTriggerer : MonoBehaviour {
 	string tileType;
 	public string eventType;
 	public string storyEventName;
-	float triggerDistance = 0.5f;
+	float triggerDistance = 0.6f;
 
 	GameObject player;
 	GameObject flag;
@@ -25,8 +25,15 @@ public class EventTriggerer : MonoBehaviour {
 	public bool triggered;
 	bool visible = false;
 	bool testOverride = false;
+	bool alwaysVisible = false;
+	bool alwaysHidden = false;
+	bool tempHidden = false;
 
-	void Start () {
+	float triggerCooldownTimer = 0f;
+	float triggerCooldownTime = 5f;
+	bool triggerCooldown = false;
+
+	void Awake () {
 		if (eventType == null) {
 			eventType = "RandomEvent";
 		}
@@ -38,7 +45,7 @@ public class EventTriggerer : MonoBehaviour {
 	}
 
 	void Update(){
-		if (visible || testOverride) {
+		if ((visible || testOverride) && !triggerCooldown) {
 			if (!triggered && Vector3.Distance (transform.position, player.transform.position) < triggerDistance) {
 				Debug.Log ("trigger");
 				if (eventType == "RandomEvent") {
@@ -59,6 +66,14 @@ public class EventTriggerer : MonoBehaviour {
 					}
 					gameObject.SetActive (false);
 				}
+			}
+		}
+		if (triggerCooldown) {
+			if (triggerCooldownTimer < triggerCooldownTime) {
+				triggerCooldownTimer += Time.deltaTime;
+			} else {
+				triggerCooldown = false;
+				triggerCooldownTimer = 0f;
 			}
 		}
 	}
@@ -124,13 +139,46 @@ public class EventTriggerer : MonoBehaviour {
 	}
 
 	void OnTriggerEnter(){
+		if (!alwaysHidden && !tempHidden) {
+			visible = true;
+			GetComponent<MeshRenderer> ().enabled = true;
+		}
+	}
+
+	void OnTriggerExit(){
+		if (!alwaysVisible) {
+			visible = false;
+			GetComponent<MeshRenderer> ().enabled = false;
+		}
+	}
+
+	public void MakeAlwaysVisible(){
+		alwaysHidden = false;
+		alwaysVisible = true;
 		visible = true;
 		GetComponent<MeshRenderer> ().enabled = true;
 	}
 
-	void OnTriggerExit(){
+	public void MakeAlwaysHidden(){
+		alwaysVisible = false;
+		alwaysHidden = true;
 		visible = false;
 		GetComponent<MeshRenderer> ().enabled = false;
+	}
+
+	public void HideDuringEvent(){
+		visible = false;
+		GetComponent<MeshRenderer> ().enabled = false;
+		tempHidden = true;
+	}
+
+	public void ShowAfterEvent(){
+		tempHidden = false;
+		if (alwaysVisible && !alwaysHidden) {
+			visible = true;
+			GetComponent<MeshRenderer> ().enabled = true;
+		}
+		triggerCooldown = true;
 	}
 //	void FixedUpdate () {
 //		if (player.GetComponent<MapPlayer> ().moving) {

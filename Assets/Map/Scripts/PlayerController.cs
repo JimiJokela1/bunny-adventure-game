@@ -22,15 +22,16 @@ public class PlayerController : MonoBehaviour {
 	public const int COURTHOUSE_FIRST = 1;
 	public const int UNICORN = 2;
 	public const int CENTAUR = 3;
-	public const int PANDA = 4;
-	public const int COURTHOUSE_FINAL = 5;
-
+	public const int ALLQUESTSDONE = 4;
+	public const int PANDA = 5;
+	public const int COURTHOUSE_FINAL = 6;
 
 	public List<int> progress;
 //	public List<string> charactersMet;
 //	public List<string> questsDone;
 
 	void Start(){
+		progress = new List<int> ();
 		mapPlayer = gameObject.GetComponent<MapPlayer> ();
 //		charactersMet = new List<string> ();
 	}
@@ -45,5 +46,42 @@ public class PlayerController : MonoBehaviour {
 
 	public void AddToInv(string itemName){
 		GameController.Instance.GetComponent<Inventory> ().AddToInv (itemName);
+	}
+
+	public void AddToProgress(int newProgress){
+		progress.Add (newProgress);
+		if (newProgress == TUTORIAL) {
+			foreach (GameObject o in GameObject.FindGameObjectsWithTag("QuestEventTrigger")) {
+				if (o.GetComponent<EventTriggerer> ().storyEventName == "courthouse") {
+					o.GetComponent<EventTriggerer> ().MakeAlwaysVisible ();
+				}
+			}
+		} else if (newProgress == COURTHOUSE_FIRST) {
+			foreach (GameObject o in GameObject.FindGameObjectsWithTag("QuestEventTrigger")) {
+				if (o.GetComponent<EventTriggerer> ().storyEventName == "owl") {
+					o.GetComponent<EventTriggerer> ().MakeAlwaysVisible ();
+				} else if (o.GetComponent<EventTriggerer> ().storyEventName == "david") {
+					o.GetComponent<EventTriggerer> ().MakeAlwaysVisible ();
+				}
+			}
+		} else if (newProgress == UNICORN) {
+			foreach (GameObject o in GameObject.FindGameObjectsWithTag("QuestEventTrigger")) {
+				if (o.GetComponent<EventTriggerer> ().storyEventName == "unicorn") {
+					o.GetComponent<EventTriggerer> ().MakeAlwaysHidden ();
+				}
+			}
+		} else if (newProgress == CENTAUR) {
+			foreach (GameObject o in GameObject.FindGameObjectsWithTag("QuestEventTrigger")) {
+				if (o.GetComponent<EventTriggerer> ().storyEventName == "centaur") {
+					o.GetComponent<EventTriggerer> ().MakeAlwaysHidden ();
+				}
+			}
+		} else if (newProgress == ALLQUESTSDONE) {
+			foreach (GameObject o in GameObject.FindGameObjectsWithTag("QuestEventTrigger")) {
+				if (o.GetComponent<EventTriggerer> ().storyEventName == "panda") {
+					o.GetComponent<EventTriggerer> ().MakeAlwaysVisible ();
+				}
+			}
+		}
 	}
 }

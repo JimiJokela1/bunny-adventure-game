@@ -22,6 +22,9 @@ public class DungeonGeneratorJimi : MonoBehaviour {
 	public Material floorMat;
 	public GameObject trapTrigger;
 
+	float endTimer = 0;
+	float endTime = 3f;
+
 	void Start(){
 //		Tile tileTemp = new Tile ("tile_floor", 100, 1, 100, Vector3.zero, floorMat);
 //		tileTemp.instantiateTile (tileTemp);
@@ -30,6 +33,13 @@ public class DungeonGeneratorJimi : MonoBehaviour {
 
 	void Update(){
 		GameObject.Find ("UnicornDustGatheredText").GetComponent<Text> ().text = "Dust left: " + dustLeft;
+		if (dustLeft == 0) {
+			if (endTimer < endTime) {
+				endTimer += Time.deltaTime;
+			} else {
+				GameController.Instance.ChangeGameState (GameController.GAMESTATE_MAP);
+			}
+		}
 	}
 
 

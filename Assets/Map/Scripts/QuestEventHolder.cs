@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Holds random events so we can reactivate them
-public class EventHolder : MonoBehaviour {
+// Holds uest events so we can reactivate events
+public class QuestEventHolder : MonoBehaviour {
 
 	// Instance for singleton class, meaning there is only one of this object ever
-	public static EventHolder Instance = null;
+	public static QuestEventHolder Instance = null;
 	void Awake () {
 		if (Instance == null) {
 			Instance = this;

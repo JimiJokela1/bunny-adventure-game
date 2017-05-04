@@ -43,6 +43,10 @@ public class GameController : MonoBehaviour {
 	public float timeOfDay = 8f;
 	public float timeScale = 1f;
 	bool timePaused = true;
+	public float randomStormChance = 5f;
+
+	float stormTimer = 0f;
+	float stormTime = 5f;
 
 	public bool testStorm = false; // for testing
 	Button generateButton; // for testing
@@ -158,6 +162,7 @@ public class GameController : MonoBehaviour {
 				}
 
 				ChangeGameState (GAMESTATE_MAP);
+				ChangeGameState (GAMESTATE_STORYEVENT, scene: "scene_beginning");
 				break;
 
 			case GAMESTATE_MAP:
@@ -172,8 +177,11 @@ public class GameController : MonoBehaviour {
 				TileHolder.Instance.gameObject.SetActive (true);
 				EventHolder.Instance.gameObject.SetActive (true);
 				if (SceneManager.GetActiveScene ().name != "scene_tilemap") {
-					Debug.Log ("Loading scene: " + scene);
+					Debug.Log ("Loading scene: scene_tilemap");
 					SceneManager.LoadScene ("scene_tilemap");
+				}
+				foreach (EventTriggerer eve in QuestEventHolder.Instance.GetComponentsInChildren<EventTriggerer>()) {
+					eve.ShowAfterEvent ();
 				}
 				ResumeTime ();
 				break;
@@ -184,14 +192,7 @@ public class GameController : MonoBehaviour {
 					returnToMapButton.gameObject.SetActive (true);
 					eventTileType = eventTriggerer.GetEventTileType ();
 					if (oldGameState == GAMESTATE_MAP) {
-						player.GetComponent<MapPlayer> ().StopMoving ();
-						foreach (GameObject o in mapCanvasObjects) {
-							o.SetActive (false);
-						}
-						directionalLight.gameObject.SetActive (false);
-						player.SetActive (false);
-						TileHolder.Instance.gameObject.SetActive (false);
-						EventHolder.Instance.gameObject.SetActive (false);
+						HideMapStuff ();
 					}
 					if (SceneManager.GetActiveScene ().name != "scene_random") {
 						Debug.Log ("Loading scene: " + scene);
@@ -208,14 +209,7 @@ public class GameController : MonoBehaviour {
 					
 					// if changing from map, disable map stuff that will not be destroyed, but need to be hidden
 					if (oldGameState == GAMESTATE_MAP) {
-						player.GetComponent<MapPlayer> ().StopMoving ();
-						foreach (GameObject o in mapCanvasObjects) {
-							o.SetActive (false);
-						}
-						directionalLight.gameObject.SetActive (false);
-						player.SetActive (false);
-						TileHolder.Instance.gameObject.SetActive (false);
-						EventHolder.Instance.gameObject.SetActive (false);
+						HideMapStuff ();
 					}
 
 					returnToMapButton.gameObject.SetActive (true);
@@ -234,14 +228,7 @@ public class GameController : MonoBehaviour {
 
 					// if changing from map, disable map stuff that will not be destroyed, but need to be hidden
 					if (oldGameState == GAMESTATE_MAP) {
-						player.GetComponent<MapPlayer> ().StopMoving ();
-						foreach (GameObject o in mapCanvasObjects) {
-							o.SetActive (false);
-						}
-						directionalLight.gameObject.SetActive (false);
-						player.SetActive (false);
-						TileHolder.Instance.gameObject.SetActive (false);
-						EventHolder.Instance.gameObject.SetActive (false);
+						HideMapStuff ();
 					}
 
 					returnToMapButton.gameObject.SetActive (true);
@@ -252,6 +239,20 @@ public class GameController : MonoBehaviour {
 				
 			default:
 				break;
+		}
+	}
+
+	void HideMapStuff(){
+		player.GetComponent<MapPlayer> ().StopMoving ();
+		foreach (GameObject o in mapCanvasObjects) {
+			o.SetActive (false);
+		}
+		directionalLight.gameObject.SetActive (false);
+		player.SetActive (false);
+		TileHolder.Instance.gameObject.SetActive (false);
+		EventHolder.Instance.gameObject.SetActive (false);
+		foreach (EventTriggerer eve in QuestEventHolder.Instance.GetComponentsInChildren<EventTriggerer>()) {
+			eve.HideDuringEvent ();
 		}
 	}
 
@@ -345,6 +346,7 @@ public class GameController : MonoBehaviour {
 			umbrellaButton.gameObject.SetActive (true);
 			rainParticles.gameObject.SetActive (true);
 			MapGenerator.Instance.GetComponent<Clouds> ().AddStormClouds (100);
+			stormTime = Random.Range (5f, 15f);
 		}
 	}
 
@@ -380,19 +382,24 @@ public class GameController : MonoBehaviour {
 	}
 
 	void RandomWeather(){
-		if (testStorm && weatherState != "storm") {
-			SetWeather ("storm");
-		} else if (!testStorm && weatherState != "clear") {
+//		if (testStorm && weatherState != "storm") {
+//			SetWeather ("storm");
+//		} else if (!testStorm && weatherState != "clear") {
+//			SetWeather ("clear");
+//		}
+
+		if (Random.Range (0f, 100f) < (randomStormChance * Time.deltaTime)) {
+			if (weatherState == "clear") {
+				SetWeather ("storm");
+			} 
+		}
+		if (weatherState == "storm" && stormTimer < stormTime) {
+			stormTimer += Time.deltaTime * timeScale;
+		} else if (weatherState == "storm") {
 			SetWeather ("clear");
+			stormTimer = 0f;
 		}
 
-//		if (Random.Range (0f, 100f) < (5f * Time.deltaTime)) {
-//			if (weatherState == "clear") {
-//				SetWeather ("storm");
-//			} else if (weatherState == "storm") {
-//				SetWeather ("clear");
-//			}
-//		}
 	}
 
 	public void StopTime(){
