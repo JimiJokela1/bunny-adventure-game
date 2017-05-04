@@ -145,9 +145,9 @@ public class GameController : MonoBehaviour {
 	/// Changes the state of the game.
 	/// </summary>
 	/// <param name="newGameState">New game state: see constants.</param>
-	/// <param name="storyScene">Story scene to change to, used for console commands only.</param>
+	/// <param name="scene">Scene to change to, used for console commands only.</param>
 	/// <param name="eventTriggerer">If an EventTriggerer is changing the game state.</param>
-	public void ChangeGameState (int newGameState, string storyScene = null, EventTriggerer eventTriggerer = null)
+	public void ChangeGameState (int newGameState, string scene = null, EventTriggerer eventTriggerer = null)
 	{
 		oldGameState = gameState;
 		gameState = newGameState;
@@ -161,6 +161,7 @@ public class GameController : MonoBehaviour {
 				break;
 
 			case GAMESTATE_MAP:
+				// Reactivate stuff
 				returnToMapButton.gameObject.SetActive (false);
 				foreach (GameObject o in mapCanvasObjects) {
 					o.SetActive (true);
@@ -170,8 +171,9 @@ public class GameController : MonoBehaviour {
 				player.SetActive (true);
 				TileHolder.Instance.gameObject.SetActive (true);
 				EventHolder.Instance.gameObject.SetActive (true);
-				if (SceneManager.GetActiveScene ().name != "tilemap") {
-					SceneManager.LoadScene ("tilemap");
+				if (SceneManager.GetActiveScene ().name != "scene_tilemap") {
+					Debug.Log ("Loading scene: " + scene);
+					SceneManager.LoadScene ("scene_tilemap");
 				}
 				ResumeTime ();
 				break;
@@ -191,15 +193,20 @@ public class GameController : MonoBehaviour {
 						TileHolder.Instance.gameObject.SetActive (false);
 						EventHolder.Instance.gameObject.SetActive (false);
 					}
-					if (SceneManager.GetActiveScene ().name != "EventGeneratorScene") {
-						SceneManager.LoadScene ("EventGeneratorScene");
+					if (SceneManager.GetActiveScene ().name != "scene_random") {
+						Debug.Log ("Loading scene: " + scene);
+						SceneManager.LoadScene ("scene_random");
 					}
 				}
 				break;
 
 			case GAMESTATE_STORYEVENT:
+				
 				console.gameObject.SetActive (false);
-				if (eventTriggerer != null) {
+
+				if (eventTriggerer != null) { // if call came from an event triggerer on the map
+					
+					// if changing from map, disable map stuff that will not be destroyed, but need to be hidden
 					if (oldGameState == GAMESTATE_MAP) {
 						player.GetComponent<MapPlayer> ().StopMoving ();
 						foreach (GameObject o in mapCanvasObjects) {
@@ -211,15 +218,21 @@ public class GameController : MonoBehaviour {
 						EventHolder.Instance.gameObject.SetActive (false);
 					}
 
+					returnToMapButton.gameObject.SetActive (true);
+					Debug.Log ("Loading scene: " + scene);
 					SceneManager.LoadScene ("scene_" + eventTriggerer.storyEventName);
-//					if (eventTriggerer.storyEventName == "courthouse1") {
-//						SceneManager.LoadScene ("scene_courthouse");
-//					} else if (eventTriggerer.storyEventName == "unicorn") {
-//						SceneManager.LoadScene ("scene_unicorn");
-//					} else if (eventTriggerer.storyEventName == "owl") {
-//						SceneManager.LoadScene ("scene_owl");
-//					}
-				} else if (storyScene != null) {
+
+				} else if (scene != null) { // if call came from console command
+					// if changing to tilemap or random event, there's a special case in ChangeGameState()
+					if (scene == "scene_tilemap") {
+						ChangeGameState (GAMESTATE_MAP);
+						break;
+					} else if (scene == "scene_random") {
+						ChangeGameState (GAMESTATE_RANDOMEVENT);
+						break;
+					}
+
+					// if changing from map, disable map stuff that will not be destroyed, but need to be hidden
 					if (oldGameState == GAMESTATE_MAP) {
 						player.GetComponent<MapPlayer> ().StopMoving ();
 						foreach (GameObject o in mapCanvasObjects) {
@@ -231,7 +244,9 @@ public class GameController : MonoBehaviour {
 						EventHolder.Instance.gameObject.SetActive (false);
 					}
 
-					SceneManager.LoadScene (storyScene);
+					returnToMapButton.gameObject.SetActive (true);
+					Debug.Log ("Loading scene: " + scene);
+					SceneManager.LoadScene (scene);
 				}
 				break;
 				
@@ -261,40 +276,15 @@ public class GameController : MonoBehaviour {
 			case "test":
 				Debug.Log ("test command");
 				break;
-			case "unicorn":
-				if (SceneManager.GetActiveScene ().name != "scene_unicorn") {
-					ChangeGameState (GAMESTATE_STORYEVENT, "scene_unicorn");
-				}
-				break;
-			case "owl":
-				if (SceneManager.GetActiveScene ().name != "scene_owl") {
-					ChangeGameState (GAMESTATE_STORYEVENT, "scene_owl");
-				}
-				break;
-			case "panda":
-				if (SceneManager.GetActiveScene ().name != "scene_panda") {
-					ChangeGameState (GAMESTATE_STORYEVENT, "scene_panda");
-				}
-				break;
-			case "courthouse1":
-				if (SceneManager.GetActiveScene ().name != "scene_courthouse1") {
-					ChangeGameState (GAMESTATE_STORYEVENT, "scene_courthouse1");
-				}
-				break;
-			case "courthouse2":
-				if (SceneManager.GetActiveScene ().name != "scene_courthouse2") {
-					ChangeGameState (GAMESTATE_STORYEVENT, "scene_courthouse2");
-				}
-				break;
-			case "random":
-				if (SceneManager.GetActiveScene ().name != "scene_random") {
-					ChangeGameState (GAMESTATE_STORYEVENT, "scene_random");
-				}
-				break;
 			default:
+				if (SceneManager.GetActiveScene ().name != "scene_" + command && SceneListCheck.Has ("scene_" + command)) {
+					ChangeGameState (GAMESTATE_STORYEVENT, "scene_" + command);
+				} else {
+					Debug.Log ("Invalid scene name: \"scene_" + command + "\"");
+				}
 				break;
 		}
-						console.ActivateInputField ();
+		console.ActivateInputField ();
 	}
 
 	public int GetGameState(){
