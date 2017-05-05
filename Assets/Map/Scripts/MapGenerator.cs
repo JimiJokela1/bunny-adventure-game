@@ -281,7 +281,7 @@ public class MapGenerator : MonoBehaviour {
 	/// Places random events randomly on map and hides them.
 	/// </summary>
 	/// <param name="amount">Amount of random events to spawn.</param>
-	void PlaceEvents(int amount){
+	void PlaceEvents(int amount, bool load = false, Dictionary<string, float[]> storyEventLocations = null){
 		for (int i = 0; i < randomEventAmount; i++) {
 			bool success = false;
 			while (success == false) {
@@ -292,7 +292,7 @@ public class MapGenerator : MonoBehaviour {
 					if (Physics.Raycast (location, Vector3.down, out hit, 100f, tileMask)) {
 						string tileType = hit.collider.tag;
 						if (tileType != "tile_water1") {
-							GameObject temp = Instantiate (randomEventMarker, location, Quaternion.Euler(-90f, 0f, Random.Range(-35f, 35f)), eventHolder);
+							GameObject temp = Instantiate (randomEventMarker, location, Quaternion.Euler (-90f, 0f, Random.Range (-35f, 35f)), eventHolder);
 							eventList.Add (temp);
 							success = true;
 						}
@@ -301,73 +301,121 @@ public class MapGenerator : MonoBehaviour {
 			}
 		}
 
-		// place panda and courthouse
-		Vector3 pandaPos;
-		Vector3 courthousePos;
-		float landEdge = (levelSize - waterWidth * 2) / 2 + .5f;
-		float closeEdge = (levelSize - waterWidth * 2) / 3 + .5f;
-		int tries = 100;
-		while (tries > 0){
-			int randomSide = Random.Range (0, 4);
-			if (randomSide == 0) {
-				pandaPos = new Vector3 (Random.Range (-landEdge, landEdge), .5f, Random.Range(closeEdge, landEdge));
-				courthousePos = new Vector3 (Random.Range (-closeEdge / 2, closeEdge / 2), .5f, -closeEdge / 2);
-			} else if (randomSide == 1) {
-				pandaPos = new Vector3 (Random.Range(closeEdge, landEdge), .5f, Random.Range (-landEdge, landEdge));
-				courthousePos = new Vector3 (-closeEdge / 2, .5f, Random.Range (-closeEdge / 2, closeEdge / 2));
-			} else if (randomSide == 2) {
-				pandaPos = new Vector3 (Random.Range (-landEdge, landEdge), .5f, -Random.Range(closeEdge, landEdge));
-				courthousePos = new Vector3 (Random.Range (-closeEdge / 2, closeEdge / 2), .5f, closeEdge / 2);
-			} else {
-				pandaPos = new Vector3 (-Random.Range(closeEdge, landEdge), .5f, Random.Range (-landEdge, landEdge));
-				courthousePos = new Vector3 (closeEdge / 2, .5f, Random.Range (-closeEdge / 2, closeEdge / 2));
-			}
-			RaycastHit hit;
-			if (Physics.Raycast (pandaPos, Vector3.down, out hit, 100f, tileMask)) {
-				if (hit.collider.tag == "tile_mountain1") {
-					Debug.Log ("tries: " + tries);
-					// panda
-					GameObject pandaEvent = Instantiate (questMarker, pandaPos, Quaternion.Euler(-90f, 0f, Random.Range(-35f, 35f)), questEventHolder);
-					pandaEvent.GetComponent<EventTriggerer> ().storyEventName = "panda";
-					pandaEvent.GetComponent<SphereCollider> ().radius = 15f;
-
-					// courthouse 
-					GameObject courthouseEvent = Instantiate (questMarker, courthousePos, Quaternion.Euler(-90f, 0f, Random.Range(-35f, 35f)), questEventHolder);
-					courthouseEvent.GetComponent<EventTriggerer> ().storyEventName = "courthouse";
-
-					Debug.Log ("Placed panda and courthouse");
-					break;
+		if (load && storyEventLocations != null) {
+			foreach (string name in storyEventLocations.Keys) {
+				Vector3 pos = new Vector3 (storyEventLocations [name] [0], storyEventLocations [name] [1], storyEventLocations [name] [2]);
+				switch (name){
+					case "panda":
+						// panda
+						GameObject pandaEvent = Instantiate (questMarker, pos, Quaternion.Euler (-90f, 0f, Random.Range (-35f, 35f)), questEventHolder);
+						pandaEvent.GetComponent<EventTriggerer> ().storyEventName = "panda";
+						pandaEvent.GetComponent<SphereCollider> ().radius = 15f;
+						eventList.Add (pandaEvent);
+						break;
+					case "courthouse":
+						// courthouse 
+						GameObject courthouseEvent = Instantiate (questMarker, pos, Quaternion.Euler (-90f, 0f, Random.Range (-35f, 35f)), questEventHolder);
+						courthouseEvent.GetComponent<EventTriggerer> ().storyEventName = "courthouse";
+						eventList.Add (courthouseEvent);
+						break;
+					case "owl":
+						GameObject owlEvent = Instantiate (friendMarker, pos, Quaternion.Euler (-90f, 0f, Random.Range (-35f, 35f)), questEventHolder);
+						owlEvent.GetComponent<EventTriggerer> ().storyEventName = "owl";
+						owlEvent.GetComponent<EventTriggerer> ().MakeAlwaysHidden ();
+						eventList.Add (owlEvent);
+						break;
+					case "unicorn":
+						GameObject unicornEvent = Instantiate (questMarker, pos, Quaternion.Euler (-90f, 0f, Random.Range (-35f, 35f)), questEventHolder);
+						unicornEvent.GetComponent<EventTriggerer> ().storyEventName = "unicorn";
+						unicornEvent.GetComponent<EventTriggerer> ().MakeAlwaysHidden ();
+						eventList.Add (unicornEvent);
+						break;
+					case "david":
+						GameObject guineapigEvent = Instantiate (friendMarker, pos, Quaternion.Euler (-90f, 0f, Random.Range (-35f, 35f)), questEventHolder);
+						guineapigEvent.GetComponent<EventTriggerer> ().storyEventName = "david";
+						guineapigEvent.GetComponent<EventTriggerer> ().MakeAlwaysHidden ();
+						eventList.Add (guineapigEvent);
+						break;
+					case "centaur":
+						GameObject centaurEvent = Instantiate (questMarker, pos, Quaternion.Euler (-90f, 0f, Random.Range (-35f, 35f)), questEventHolder);
+						centaurEvent.GetComponent<EventTriggerer> ().storyEventName = "centaur";
+						centaurEvent.GetComponent<EventTriggerer> ().MakeAlwaysHidden ();
+						eventList.Add (centaurEvent);
+						break;
 				}
 			}
-			tries--;
+		} else {
+			// place panda and courthouse
+			Vector3 pandaPos;
+			Vector3 courthousePos;
+			float landEdge = (levelSize - waterWidth * 2) / 2 + .5f;
+			float closeEdge = (levelSize - waterWidth * 2) / 3 + .5f;
+			int tries = 100;
+			while (tries > 0) {
+				int randomSide = Random.Range (0, 4);
+				if (randomSide == 0) {
+					pandaPos = new Vector3 (Random.Range (-landEdge, landEdge), .5f, Random.Range (closeEdge, landEdge));
+					courthousePos = new Vector3 (Random.Range (-closeEdge / 2, closeEdge / 2), .5f, -closeEdge / 2);
+				} else if (randomSide == 1) {
+					pandaPos = new Vector3 (Random.Range (closeEdge, landEdge), .5f, Random.Range (-landEdge, landEdge));
+					courthousePos = new Vector3 (-closeEdge / 2, .5f, Random.Range (-closeEdge / 2, closeEdge / 2));
+				} else if (randomSide == 2) {
+					pandaPos = new Vector3 (Random.Range (-landEdge, landEdge), .5f, -Random.Range (closeEdge, landEdge));
+					courthousePos = new Vector3 (Random.Range (-closeEdge / 2, closeEdge / 2), .5f, closeEdge / 2);
+				} else {
+					pandaPos = new Vector3 (-Random.Range (closeEdge, landEdge), .5f, Random.Range (-landEdge, landEdge));
+					courthousePos = new Vector3 (closeEdge / 2, .5f, Random.Range (-closeEdge / 2, closeEdge / 2));
+				}
+				RaycastHit hit;
+				if (Physics.Raycast (pandaPos, Vector3.down, out hit, 100f, tileMask)) {
+					if (hit.collider.tag == "tile_mountain1") {
+						Debug.Log ("tries: " + tries);
+						// panda
+						GameObject pandaEvent = Instantiate (questMarker, pandaPos, Quaternion.Euler (-90f, 0f, Random.Range (-35f, 35f)), questEventHolder);
+						pandaEvent.GetComponent<EventTriggerer> ().storyEventName = "panda";
+						pandaEvent.GetComponent<SphereCollider> ().radius = 15f;
+						eventList.Add (pandaEvent);
+
+						// courthouse 
+						GameObject courthouseEvent = Instantiate (questMarker, courthousePos, Quaternion.Euler (-90f, 0f, Random.Range (-35f, 35f)), questEventHolder);
+						courthouseEvent.GetComponent<EventTriggerer> ().storyEventName = "courthouse";
+						eventList.Add (courthouseEvent);
+
+						Debug.Log ("Placed panda and courthouse");
+						break;
+					}
+				}
+				tries--;
+			}
+
+			// place quests
+			Vector3 owlPos = new Vector3 (Random.Range (-closeEdge / 2, closeEdge / 2), .5f, Random.Range (-closeEdge / 2, closeEdge / 2));
+			Vector3 unicornPos = new Vector3 (Random.Range (-closeEdge, closeEdge), .5f, Random.Range (-closeEdge, closeEdge));
+			Vector3 guineapigPos = new Vector3 (Random.Range (-closeEdge / 2, closeEdge / 2), .5f, Random.Range (-closeEdge / 2, closeEdge / 2));
+			Vector3 centaurPos = new Vector3 (Random.Range (-closeEdge, closeEdge), .5f, Random.Range (-closeEdge, closeEdge));
+
+			GameObject owlEvent = Instantiate (friendMarker, owlPos, Quaternion.Euler (-90f, 0f, Random.Range (-35f, 35f)), questEventHolder);
+			owlEvent.GetComponent<EventTriggerer> ().storyEventName = "owl";
+			owlEvent.GetComponent<EventTriggerer> ().MakeAlwaysHidden ();
+			eventList.Add (owlEvent);
+			GameObject unicornEvent = Instantiate (questMarker, unicornPos, Quaternion.Euler (-90f, 0f, Random.Range (-35f, 35f)), questEventHolder);
+			unicornEvent.GetComponent<EventTriggerer> ().storyEventName = "unicorn";
+			unicornEvent.GetComponent<EventTriggerer> ().MakeAlwaysHidden ();
+			eventList.Add (unicornEvent);
+			GameObject guineapigEvent = Instantiate (friendMarker, guineapigPos, Quaternion.Euler (-90f, 0f, Random.Range (-35f, 35f)), questEventHolder);
+			guineapigEvent.GetComponent<EventTriggerer> ().storyEventName = "david";
+			guineapigEvent.GetComponent<EventTriggerer> ().MakeAlwaysHidden ();
+			eventList.Add (guineapigEvent);
+			GameObject centaurEvent = Instantiate (questMarker, centaurPos, Quaternion.Euler (-90f, 0f, Random.Range (-35f, 35f)), questEventHolder);
+			centaurEvent.GetComponent<EventTriggerer> ().storyEventName = "centaur";
+			centaurEvent.GetComponent<EventTriggerer> ().MakeAlwaysHidden ();
+			eventList.Add (centaurEvent);
 		}
-
-		// place quests
-		Vector3 owlPos = new Vector3(Random.Range(-closeEdge / 2, closeEdge / 2), .5f, Random.Range(-closeEdge / 2, closeEdge / 2));
-		Vector3 unicornPos = new Vector3(Random.Range(-closeEdge, closeEdge), .5f, Random.Range(-closeEdge, closeEdge));
-		Vector3 guineapigPos = new Vector3(Random.Range(-closeEdge / 2, closeEdge / 2), .5f, Random.Range(-closeEdge / 2, closeEdge / 2));
-		Vector3 centaurPos = new Vector3(Random.Range(-closeEdge, closeEdge), .5f, Random.Range(-closeEdge, closeEdge));
-
-		GameObject owlEvent = Instantiate (friendMarker, owlPos, Quaternion.Euler(-90f, 0f, Random.Range(-35f, 35f)), questEventHolder);
-		owlEvent.GetComponent<EventTriggerer> ().storyEventName = "owl";
-		owlEvent.GetComponent<EventTriggerer> ().MakeAlwaysHidden ();
-		GameObject unicornEvent = Instantiate (questMarker, unicornPos, Quaternion.Euler(-90f, 0f, Random.Range(-35f, 35f)), questEventHolder);
-		unicornEvent.GetComponent<EventTriggerer> ().storyEventName = "unicorn";
-		unicornEvent.GetComponent<EventTriggerer> ().MakeAlwaysHidden ();
-		GameObject guineapigEvent = Instantiate (friendMarker, guineapigPos, Quaternion.Euler(-90f, 0f, Random.Range(-35f, 35f)), questEventHolder);
-		guineapigEvent.GetComponent<EventTriggerer> ().storyEventName = "david";
-		guineapigEvent.GetComponent<EventTriggerer> ().MakeAlwaysHidden ();
-		GameObject centaurEvent = Instantiate (questMarker, centaurPos, Quaternion.Euler(-90f, 0f, Random.Range(-35f, 35f)), questEventHolder);
-		centaurEvent.GetComponent<EventTriggerer> ().storyEventName = "centaur";
-		centaurEvent.GetComponent<EventTriggerer> ().MakeAlwaysHidden ();
-
-		unicornEvent.SetActive (false);
-		centaurEvent.SetActive (false);
 
 
 	}
 
-	public void LoadMap(string[] tiletags){
+	public void LoadMap(string[] tiletags, Dictionary<string, float[]> storyEventLocations){
 		Vector3 location = new Vector3 (-levelSize / 2 + 0.5f, 0, -levelSize / 2 + 0.5f);
 		for (int w = 0; w < levelSize; w++) {
 			for (int h = 0; h < levelSize; h++) {
@@ -378,7 +426,7 @@ public class MapGenerator : MonoBehaviour {
 			location += new Vector3 (0, 0, 1);
 		}
 		PlaceSprites ();
-		PlaceEvents (randomEventAmount);
+		PlaceEvents (randomEventAmount, load: true, storyEventLocations: storyEventLocations);
 		GetComponent<Clouds> ().PlaceClouds ();
 	}
 
