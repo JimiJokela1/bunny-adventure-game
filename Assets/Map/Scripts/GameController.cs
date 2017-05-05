@@ -124,7 +124,6 @@ public class GameController : MonoBehaviour {
 		spawnCloudsButton.gameObject.SetActive (false);
 		smoothMapButton.gameObject.SetActive (false);
 
-		changingGameState = true;
 		ChangeGameState (GAMESTATE_START);
 	}
 
@@ -174,6 +173,7 @@ public class GameController : MonoBehaviour {
 			case GAMESTATE_START:
 				if (!LoadGame ()) {
 					MapGenerator.Instance.GenerateMap ();
+					changingGameState = true;
 				}
 
 				ChangeGameState (GAMESTATE_MAP);
@@ -275,6 +275,9 @@ public class GameController : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Hides map stuff.
+	/// </summary>
 	void HideMapStuff(){
 		player.GetComponent<MapPlayer> ().StopMoving ();
 		foreach (GameObject o in mapCanvasObjects) {
@@ -289,6 +292,9 @@ public class GameController : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Activates and deactivates the command console.
+	/// </summary>
 	void HandleConsole() {
 		if (Input.GetKeyDown (KeyCode.K) && !console.gameObject.activeSelf) {
 			console.gameObject.SetActive (true);
@@ -303,6 +309,10 @@ public class GameController : MonoBehaviour {
 		Debug.Log (dropdown.value);
 	}
 
+	/// <summary>
+	/// Handles console input.
+	/// </summary>
+	/// <param name="command">Command. Name of scene loads that scene: beginning, courthouse, owl, david, unicorn, centaur, etc.</param>
 	public void ConsoleInput(string command) {
 		Debug.Log ("Console: " + command);
 
@@ -321,10 +331,19 @@ public class GameController : MonoBehaviour {
 		console.ActivateInputField ();
 	}
 
+	/// <summary>
+	/// Gets the state of the game.
+	/// </summary>
+	/// <returns>The game state.</returns>
 	public int GetGameState(){
 		return gameState;
 	}
 
+	/// <summary>
+	/// Explicit predicate delegate to find item "Unicorn Dust".
+	/// </summary>
+	/// <returns><c>true</c>, if unicorn dust was found, <c>false</c> otherwise.</returns>
+	/// <param name="itemName">Item name.</param>
 	private static bool FindUnicornDust(string itemName){
 		if (itemName == "Unicorn Dust") {
 			return true;
@@ -414,6 +433,9 @@ public class GameController : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Sets the weather to storm randomly.
+	/// </summary>
 	void RandomWeather(){
 //		if (testStorm && weatherState != "storm") {
 //			SetWeather ("storm");
@@ -557,12 +579,16 @@ public class GameController : MonoBehaviour {
 
 			SaveData saveData = new SaveData ();
 			saveData.progress = player.GetComponent<PlayerController> ().progress;
-//			saveData.charactersMet = player.GetComponent<PlayerController> ().charactersMet;
 
 			for(int w = 0; w < MapGenerator.Instance.tilemap.GetLength(0); w++){
 				for(int h = 0; h < MapGenerator.Instance.tilemap.GetLength(1); h++){
 					saveData.tileTypes[w * 100 + h] = MapGenerator.Instance.tilemap[w, h].tag;
 				}
+			}
+
+			foreach(EventTriggerer eventTriggerer in QuestEventHolder.Instance.GetComponentsInChildren<EventTriggerer>()){
+				float[] pos = new []{eventTriggerer.transform.position.x, eventTriggerer.transform.position.y, eventTriggerer.transform.position.z};
+				saveData.storyEventLocations.Add(eventTriggerer.storyEventName, pos);
 			}
 
 			saveData.playerPosition[0] = player.transform.position.x;
@@ -591,9 +617,8 @@ public class GameController : MonoBehaviour {
 				file.Close ();
 
 				player.GetComponent<PlayerController> ().progress = saveData.progress;
-//				player.GetComponent<PlayerController> ().charactersMet = saveData.charactersMet;
 
-				MapGenerator.Instance.LoadMap(saveData.tileTypes);
+				MapGenerator.Instance.LoadMap(saveData.tileTypes, saveData.storyEventLocations);
 
 
 				Vector3 pos = new Vector3(saveData.playerPosition[0], saveData.playerPosition[1], saveData.playerPosition[2]);
@@ -620,16 +645,16 @@ public class GameController : MonoBehaviour {
 class SaveData
 {
 	public List<int> progress;
-	public List<string> charactersMet;
 	public string[] tileTypes;
 	public float[] playerPosition;
 	public List<string> inventory;
+	public Dictionary<string, float[]> storyEventLocations;
 
 	public SaveData(){
 		progress = new List<int> ();
-		charactersMet = new List<string> ();
 		inventory = new List<string> ();
 		playerPosition = new float[3];
+		storyEventLocations = new Dictionary<string, float[]> ();
 		tileTypes = new string[MapGenerator.Instance.levelSize * MapGenerator.Instance.levelSize];
 	}
 }
