@@ -300,8 +300,14 @@ public class GameController : MonoBehaviour {
 			console.gameObject.SetActive (true);
 			console.interactable = true;
 			console.ActivateInputField ();
-		} else if (Input.GetKeyDown (KeyCode.K) && console.gameObject.activeSelf) {
+			if (gameState == GAMESTATE_RANDOMEVENT || gameState == GAMESTATE_STORYEVENT) {
+				GameObject.Find ("EventPlayer").GetComponent<EventPlayer> ().canMove = false;
+			}
+		} else if (Input.GetKeyDown (KeyCode.K) && console.gameObject.activeSelf && !console.isFocused) {
 			console.gameObject.SetActive (false);
+			if (gameState == GAMESTATE_RANDOMEVENT || gameState == GAMESTATE_STORYEVENT) {
+				GameObject.Find ("EventPlayer").GetComponent<EventPlayer> ().canMove = false;
+			}
 		}
 	}
 
@@ -319,6 +325,39 @@ public class GameController : MonoBehaviour {
 		switch (command) {
 			case "test":
 				Debug.Log ("test command");
+				break;
+			case "skipscene":
+				if (SceneManager.GetActiveScene ().name != "scene_tilemap") {
+					switch (SceneManager.GetActiveScene ().name) {
+						case "scene_beginning":
+							PlayerController.Instance.AddToProgress (PlayerController.TUTORIAL);
+							break;
+						case "scene_owl":
+							PlayerController.Instance.AddToProgress (PlayerController.DIPUTS_QUEST);
+							break;
+						case "scene_owl2":
+							PlayerController.Instance.AddToProgress (PlayerController.UNICORN);
+							break;
+						case "scene_david":
+							PlayerController.Instance.AddToProgress (PlayerController.DAVID_QUEST);
+							break;
+						case "scene_david2":
+							PlayerController.Instance.AddToProgress (PlayerController.CENTAUR);
+							break;
+						case "scene_courthouse":
+							PlayerController.Instance.AddToProgress (PlayerController.COURTHOUSE_FIRST);
+							break;
+						case "scene_panda":
+							PlayerController.Instance.AddToProgress (PlayerController.PANDA);
+							break;
+						case "scene_courthousefinal":
+							PlayerController.Instance.AddToProgress (PlayerController.COURTHOUSE_FINAL);
+							break;
+						default:
+							break;
+					}
+					ChangeGameState (GAMESTATE_MAP);
+				}
 				break;
 			default:
 				if (SceneManager.GetActiveScene ().name != "scene_" + command && SceneListCheck.Has ("scene_" + command)) {
