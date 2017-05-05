@@ -19,7 +19,7 @@ public class MapPlayer : MonoBehaviour{
 	public bool camping = false;
 	Vector3 randomAcceleration;
 	Vector3 movement = Vector3.zero;
-	Vector3 finalDestination;
+	public Vector3 finalDestination;
 
 	float derailTimer = 0;
 	float randomDerailTime = 0;
@@ -29,7 +29,7 @@ public class MapPlayer : MonoBehaviour{
 	GameObject flag;
 	GameObject destinationFlag;
 
-	void Start () {
+	void Awake () {
 		originalMovementSpeed = movementSpeed;
 		slowMovementSpeed = originalMovementSpeed / 2f;
 		flag = Resources.Load ("Prefabs/flag") as GameObject;
@@ -61,7 +61,7 @@ public class MapPlayer : MonoBehaviour{
 	/// Handles the controls: Checks if clicked on map.
 	/// </summary>
 	public void HandleControls () {
-		if (Input.GetAxis ("Action1") > 0.1f && GameController.Instance.mouseOverButton == false && camping == false) {
+		if (Input.GetAxis ("Action1") > 0.1f && GameController.Instance.mouseOverButton == false && camping == false && GameController.Instance.GetGameState() == GameController.GAMESTATE_MAP) {
 			if (controlCooldown == false && moving == false) {
 				Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
 				RaycastHit hit;
@@ -134,13 +134,13 @@ public class MapPlayer : MonoBehaviour{
 		RaycastHit hit;
 		if (Physics.Raycast (transform.position, Vector3.down, out hit, 100f, tileMask)) {
 			tileType = hit.collider.tag;
-			if (tileType == "tile_mountain") {
-				movementSpeed = slowMovementSpeed;
-			} else if (tileType == "tile_water") {
-				movementSpeed = slowMovementSpeed / 2f;
-			} else {
-				movementSpeed = originalMovementSpeed;
-			}
+//			if (tileType == "tile_mountain") {
+//				movementSpeed = slowMovementSpeed;
+//			} else if (tileType == "tile_water") {
+//				movementSpeed = slowMovementSpeed / 2f;
+//			} else {
+//				movementSpeed = originalMovementSpeed;
+//			}
 		}
 	}
 
