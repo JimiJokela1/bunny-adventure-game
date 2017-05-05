@@ -12,12 +12,16 @@ public class ExitTrigger : MonoBehaviour {
 				PlayerController.Instance.AddToProgress (PlayerController.TUTORIAL);
 				break;
 			case "scene_owl":
-				// if returned quest
-//				PlayerController.Instance.AddToProgress (PlayerController.UNICORN);
+				PlayerController.Instance.AddToProgress (PlayerController.DIPUTS_QUEST);
+				break;
+			case "scene_owl2":
+				PlayerController.Instance.AddToProgress (PlayerController.UNICORN);
 				break;
 			case "scene_david":
-				// if returned quest
-//				PlayerController.Instance.AddToProgress (PlayerController.CENTAUR);
+				PlayerController.Instance.AddToProgress (PlayerController.DAVID_QUEST);
+				break;
+			case "scene_david2":
+				PlayerController.Instance.AddToProgress (PlayerController.CENTAUR);
 				break;
 			case "scene_courthouse":
 				PlayerController.Instance.AddToProgress (PlayerController.COURTHOUSE_FIRST);

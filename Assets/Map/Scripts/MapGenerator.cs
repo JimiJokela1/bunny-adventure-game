@@ -292,7 +292,7 @@ public class MapGenerator : MonoBehaviour {
 					if (Physics.Raycast (location, Vector3.down, out hit, 100f, tileMask)) {
 						string tileType = hit.collider.tag;
 						if (tileType != "tile_water1") {
-							GameObject temp = Instantiate (randomEventMarker, location, Quaternion.identity, eventHolder);
+							GameObject temp = Instantiate (randomEventMarker, location, Quaternion.Euler(-90f, 0f, Random.Range(-35f, 35f)), eventHolder);
 							eventList.Add (temp);
 							success = true;
 						}
@@ -327,12 +327,12 @@ public class MapGenerator : MonoBehaviour {
 				if (hit.collider.tag == "tile_mountain1") {
 					Debug.Log ("tries: " + tries);
 					// panda
-					GameObject pandaEvent = Instantiate (questMarker, pandaPos, Quaternion.identity, questEventHolder);
+					GameObject pandaEvent = Instantiate (questMarker, pandaPos, Quaternion.Euler(-90f, 0f, Random.Range(-35f, 35f)), questEventHolder);
 					pandaEvent.GetComponent<EventTriggerer> ().storyEventName = "panda";
 					pandaEvent.GetComponent<SphereCollider> ().radius = 15f;
 
 					// courthouse 
-					GameObject courthouseEvent = Instantiate (questMarker, courthousePos, Quaternion.identity, questEventHolder);
+					GameObject courthouseEvent = Instantiate (questMarker, courthousePos, Quaternion.Euler(-90f, 0f, Random.Range(-35f, 35f)), questEventHolder);
 					courthouseEvent.GetComponent<EventTriggerer> ().storyEventName = "courthouse";
 
 					Debug.Log ("Placed panda and courthouse");
@@ -348,16 +348,16 @@ public class MapGenerator : MonoBehaviour {
 		Vector3 guineapigPos = new Vector3(Random.Range(-closeEdge / 2, closeEdge / 2), .5f, Random.Range(-closeEdge / 2, closeEdge / 2));
 		Vector3 centaurPos = new Vector3(Random.Range(-closeEdge, closeEdge), .5f, Random.Range(-closeEdge, closeEdge));
 
-		GameObject owlEvent = Instantiate (friendMarker, owlPos, Quaternion.identity, questEventHolder);
+		GameObject owlEvent = Instantiate (friendMarker, owlPos, Quaternion.Euler(-90f, 0f, Random.Range(-35f, 35f)), questEventHolder);
 		owlEvent.GetComponent<EventTriggerer> ().storyEventName = "owl";
 		owlEvent.GetComponent<EventTriggerer> ().MakeAlwaysHidden ();
-		GameObject unicornEvent = Instantiate (questMarker, unicornPos, Quaternion.identity, questEventHolder);
+		GameObject unicornEvent = Instantiate (questMarker, unicornPos, Quaternion.Euler(-90f, 0f, Random.Range(-35f, 35f)), questEventHolder);
 		unicornEvent.GetComponent<EventTriggerer> ().storyEventName = "unicorn";
 		unicornEvent.GetComponent<EventTriggerer> ().MakeAlwaysHidden ();
-		GameObject guineapigEvent = Instantiate (friendMarker, guineapigPos, Quaternion.identity, questEventHolder);
+		GameObject guineapigEvent = Instantiate (friendMarker, guineapigPos, Quaternion.Euler(-90f, 0f, Random.Range(-35f, 35f)), questEventHolder);
 		guineapigEvent.GetComponent<EventTriggerer> ().storyEventName = "david";
 		guineapigEvent.GetComponent<EventTriggerer> ().MakeAlwaysHidden ();
-		GameObject centaurEvent = Instantiate (questMarker, centaurPos, Quaternion.identity, questEventHolder);
+		GameObject centaurEvent = Instantiate (questMarker, centaurPos, Quaternion.Euler(-90f, 0f, Random.Range(-35f, 35f)), questEventHolder);
 		centaurEvent.GetComponent<EventTriggerer> ().storyEventName = "centaur";
 		centaurEvent.GetComponent<EventTriggerer> ().MakeAlwaysHidden ();
 
