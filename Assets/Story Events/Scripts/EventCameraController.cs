@@ -6,7 +6,7 @@ public class EventCameraController : MonoBehaviour {
 
 
 	private Transform target;
-	public float smoothing = 5f; // Camera follow speed
+	public float smoothing = 5f;	// Camera follow speed
 	public float zoomSpeed = 10f;
 	float fadeSpeed = 15f;
 
@@ -43,11 +43,11 @@ public class EventCameraController : MonoBehaviour {
 		}
 	}
 
-	public void ZoomIn(){
+	public void ZoomIn () {
 		GetComponent<Camera> ().orthographicSize = 4;
 	}
 
-	public void ZoomOut(){
+	public void ZoomOut () {
 		GetComponent<Camera> ().orthographicSize = 6;
 	}
 

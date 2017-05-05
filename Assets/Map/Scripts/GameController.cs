@@ -19,7 +19,7 @@ public class GameController : MonoBehaviour {
 		}
 	}
 
-	// Game state determines what scene, objects, ui, controls are active... ideally
+	// Game state determines what scene, objects, ui, controls are active
 	public int gameState;
 	public int oldGameState;
 	public const int GAMESTATE_START = 0;
@@ -30,7 +30,6 @@ public class GameController : MonoBehaviour {
 
 	public string eventTileType;
 	GameObject player;
-//	EventTriggerer eventTriggerer;
 	ParticleSystem rainParticles;
 	public string weatherState = "clear";
 
@@ -44,6 +43,10 @@ public class GameController : MonoBehaviour {
 	public float timeOfDay = 8f;
 	public float timeScale = 1f;
 	bool timePaused = true;
+	public float randomStormChance = 5f;
+
+	float stormTimer = 0f;
+	float stormTime = 5f;
 
 	public bool testStorm = false; // for testing
 	Button generateButton; // for testing
@@ -54,6 +57,9 @@ public class GameController : MonoBehaviour {
 	Button returnToMapButton;
 	Button umbrellaButton;
 	Button campButton;
+	InputField console;
+	Dropdown commandDropdown;
+
 	public List<GameObject> mapCanvasObjects; // List for canvas objects that should be active only on map
 	public bool mouseOverButton = false; // tells if mouse pointer is over a button
 
@@ -76,7 +82,14 @@ public class GameController : MonoBehaviour {
 
 		saveButton = GameObject.Find ("SaveButton").GetComponent<Button> ();
 		saveButton.onClick.AddListener (() => SaveGame ());
+		console = GameObject.Find ("Console").GetComponent<InputField> ();
+		console.onEndEdit.AddListener ((value) => ConsoleInput(value));
+		console.gameObject.SetActive (false);
 
+//		commandDropdown = GameObject.Find ("CommandDropdown").GetComponent<Dropdown> ();
+//		commandDropdown.onValueChanged.AddListener (delegate {
+//			CommandDropdownHandler(commandDropdown);
+//		});
 
 
 		// Gameplay buttons
@@ -94,18 +107,25 @@ public class GameController : MonoBehaviour {
 		rainParticles.gameObject.SetActive (false);
 
 		mapCanvasObjects = new List<GameObject> ();
-		mapCanvasObjects.Add (generateButton.gameObject);
-		mapCanvasObjects.Add (eventTestButton.gameObject);
-		mapCanvasObjects.Add (spawnCloudsButton.gameObject);
 		mapCanvasObjects.Add (umbrellaButton.gameObject);
 		mapCanvasObjects.Add (campButton.gameObject);
 		mapCanvasObjects.Add (saveButton.gameObject);
 
+//		mapCanvasObjects.Add (generateButton.gameObject);
+		mapCanvasObjects.Add (eventTestButton.gameObject);
+//		mapCanvasObjects.Add (spawnCloudsButton.gameObject);
+//		mapCanvasObjects.Add (smoothMapButton.gameObject);
+
+		generateButton.gameObject.SetActive (false);
+		spawnCloudsButton.gameObject.SetActive (false);
+		smoothMapButton.gameObject.SetActive (false);
 
 		ChangeGameState (GAMESTATE_START);
 	}
 
 	void Update(){
+		HandleConsole ();
+
 		SkyLightUpdate ();
 		ChangeLight ();
 		RandomWeather ();
@@ -129,8 +149,9 @@ public class GameController : MonoBehaviour {
 	/// Changes the state of the game.
 	/// </summary>
 	/// <param name="newGameState">New game state: see constants.</param>
+	/// <param name="scene">Scene to change to, used for console commands only.</param>
 	/// <param name="eventTriggerer">If an EventTriggerer is changing the game state.</param>
-	public void ChangeGameState (int newGameState, EventTriggerer eventTriggerer = null)
+	public void ChangeGameState (int newGameState, string scene = null, EventTriggerer eventTriggerer = null)
 	{
 		oldGameState = gameState;
 		gameState = newGameState;
@@ -141,9 +162,11 @@ public class GameController : MonoBehaviour {
 				}
 
 				ChangeGameState (GAMESTATE_MAP);
+				ChangeGameState (GAMESTATE_STORYEVENT, scene: "scene_beginning");
 				break;
 
 			case GAMESTATE_MAP:
+				// Reactivate stuff
 				returnToMapButton.gameObject.SetActive (false);
 				foreach (GameObject o in mapCanvasObjects) {
 					o.SetActive (true);
@@ -153,58 +176,116 @@ public class GameController : MonoBehaviour {
 				player.SetActive (true);
 				TileHolder.Instance.gameObject.SetActive (true);
 				EventHolder.Instance.gameObject.SetActive (true);
-				if (SceneManager.GetActiveScene ().name != "tilemap") {
-					SceneManager.LoadScene ("tilemap");
+				if (SceneManager.GetActiveScene ().name != "scene_tilemap") {
+					Debug.Log ("Loading scene: scene_tilemap");
+					SceneManager.LoadScene ("scene_tilemap");
+				}
+				foreach (EventTriggerer eve in QuestEventHolder.Instance.GetComponentsInChildren<EventTriggerer>()) {
+					eve.ShowAfterEvent ();
 				}
 				ResumeTime ();
 				break;
 
 			case GAMESTATE_RANDOMEVENT:
+				console.gameObject.SetActive (false);
 				if (eventTriggerer != null) {
 					returnToMapButton.gameObject.SetActive (true);
 					eventTileType = eventTriggerer.GetEventTileType ();
 					if (oldGameState == GAMESTATE_MAP) {
-						player.GetComponent<MapPlayer> ().StopMoving ();
-						foreach (GameObject o in mapCanvasObjects) {
-							o.SetActive (false);
-						}
-						directionalLight.gameObject.SetActive (false);
-						player.SetActive (false);
-						TileHolder.Instance.gameObject.SetActive (false);
-						EventHolder.Instance.gameObject.SetActive (false);
+						HideMapStuff ();
 					}
-					if (SceneManager.GetActiveScene ().name != "EventGeneratorScene") {
-						SceneManager.LoadScene ("EventGeneratorScene");
+					if (SceneManager.GetActiveScene ().name != "scene_random") {
+						Debug.Log ("Loading scene: " + scene);
+						SceneManager.LoadScene ("scene_random");
 					}
 				}
 				break;
 
 			case GAMESTATE_STORYEVENT:
-				if (eventTriggerer != null) {
+				
+				console.gameObject.SetActive (false);
+
+				if (eventTriggerer != null) { // if call came from an event triggerer on the map
+					
+					// if changing from map, disable map stuff that will not be destroyed, but need to be hidden
 					if (oldGameState == GAMESTATE_MAP) {
-						player.GetComponent<MapPlayer> ().StopMoving ();
-						foreach (GameObject o in mapCanvasObjects) {
-							o.SetActive (false);
-						}
-						directionalLight.gameObject.SetActive (false);
-						player.SetActive (false);
-						TileHolder.Instance.gameObject.SetActive (false);
-						EventHolder.Instance.gameObject.SetActive (false);
+						HideMapStuff ();
 					}
 
-					if (eventTriggerer.storyEventName == "courthouse1") {
-						SceneManager.LoadScene ("scene_courthouse");
-					} else if (eventTriggerer.storyEventName == "unicorn") {
-						SceneManager.LoadScene ("scene_unicorn");
-					} else if (eventTriggerer.storyEventName == "owl") {
-						SceneManager.LoadScene ("scene_owl");
+					returnToMapButton.gameObject.SetActive (true);
+					Debug.Log ("Loading scene: " + scene);
+					SceneManager.LoadScene ("scene_" + eventTriggerer.storyEventName);
+
+				} else if (scene != null) { // if call came from console command
+					// if changing to tilemap or random event, there's a special case in ChangeGameState()
+					if (scene == "scene_tilemap") {
+						ChangeGameState (GAMESTATE_MAP);
+						break;
+					} else if (scene == "scene_random") {
+						ChangeGameState (GAMESTATE_RANDOMEVENT);
+						break;
 					}
+
+					// if changing from map, disable map stuff that will not be destroyed, but need to be hidden
+					if (oldGameState == GAMESTATE_MAP) {
+						HideMapStuff ();
+					}
+
+					returnToMapButton.gameObject.SetActive (true);
+					Debug.Log ("Loading scene: " + scene);
+					SceneManager.LoadScene (scene);
 				}
 				break;
 				
 			default:
 				break;
 		}
+	}
+
+	void HideMapStuff(){
+		player.GetComponent<MapPlayer> ().StopMoving ();
+		foreach (GameObject o in mapCanvasObjects) {
+			o.SetActive (false);
+		}
+		directionalLight.gameObject.SetActive (false);
+		player.SetActive (false);
+		TileHolder.Instance.gameObject.SetActive (false);
+		EventHolder.Instance.gameObject.SetActive (false);
+		foreach (EventTriggerer eve in QuestEventHolder.Instance.GetComponentsInChildren<EventTriggerer>()) {
+			eve.HideDuringEvent ();
+		}
+	}
+
+	void HandleConsole() {
+		if (Input.GetKeyDown (KeyCode.K) && !console.gameObject.activeSelf) {
+			console.gameObject.SetActive (true);
+			console.interactable = true;
+			console.ActivateInputField ();
+		} else if (Input.GetKeyDown (KeyCode.K) && console.gameObject.activeSelf) {
+			console.gameObject.SetActive (false);
+		}
+	}
+
+	void CommandDropdownHandler(Dropdown dropdown){
+		Debug.Log (dropdown.value);
+	}
+
+	public void ConsoleInput(string command) {
+		Debug.Log ("Console: " + command);
+
+		switch (command) {
+			case "test":
+				Debug.Log ("test command");
+				break;
+			default:
+				if (SceneManager.GetActiveScene ().name != "scene_" + command && SceneListCheck.Has ("scene_" + command)) {
+					ChangeGameState (GAMESTATE_STORYEVENT, "scene_" + command);
+				} else {
+					Debug.Log ("Invalid scene name: \"scene_" + command + "\"");
+				}
+				break;
+		}
+		console.ActivateInputField ();
 	}
 
 	public int GetGameState(){
@@ -265,6 +346,7 @@ public class GameController : MonoBehaviour {
 			umbrellaButton.gameObject.SetActive (true);
 			rainParticles.gameObject.SetActive (true);
 			MapGenerator.Instance.GetComponent<Clouds> ().AddStormClouds (100);
+			stormTime = Random.Range (5f, 15f);
 		}
 	}
 
@@ -300,19 +382,24 @@ public class GameController : MonoBehaviour {
 	}
 
 	void RandomWeather(){
-		if (testStorm && weatherState != "storm") {
-			SetWeather ("storm");
-		} else if (!testStorm && weatherState != "clear") {
+//		if (testStorm && weatherState != "storm") {
+//			SetWeather ("storm");
+//		} else if (!testStorm && weatherState != "clear") {
+//			SetWeather ("clear");
+//		}
+
+		if (Random.Range (0f, 100f) < (randomStormChance * Time.deltaTime)) {
+			if (weatherState == "clear") {
+				SetWeather ("storm");
+			} 
+		}
+		if (weatherState == "storm" && stormTimer < stormTime) {
+			stormTimer += Time.deltaTime * timeScale;
+		} else if (weatherState == "storm") {
 			SetWeather ("clear");
+			stormTimer = 0f;
 		}
 
-//		if (Random.Range (0f, 100f) < (5f * Time.deltaTime)) {
-//			if (weatherState == "clear") {
-//				SetWeather ("storm");
-//			} else if (weatherState == "storm") {
-//				SetWeather ("clear");
-//			}
-//		}
 	}
 
 	public void StopTime(){
@@ -437,7 +524,7 @@ public class GameController : MonoBehaviour {
 
 			SaveData saveData = new SaveData ();
 			saveData.progress = player.GetComponent<PlayerController> ().progress;
-			saveData.charactersMet = player.GetComponent<PlayerController> ().charactersMet;
+//			saveData.charactersMet = player.GetComponent<PlayerController> ().charactersMet;
 
 			for(int w = 0; w < MapGenerator.Instance.tilemap.GetLength(0); w++){
 				for(int h = 0; h < MapGenerator.Instance.tilemap.GetLength(1); h++){
@@ -471,7 +558,7 @@ public class GameController : MonoBehaviour {
 				file.Close ();
 
 				player.GetComponent<PlayerController> ().progress = saveData.progress;
-				player.GetComponent<PlayerController> ().charactersMet = saveData.charactersMet;
+//				player.GetComponent<PlayerController> ().charactersMet = saveData.charactersMet;
 
 				MapGenerator.Instance.LoadMap(saveData.tileTypes);
 
@@ -499,14 +586,14 @@ public class GameController : MonoBehaviour {
 [System.Serializable]
 class SaveData
 {
-	public List<string> progress;
+	public List<int> progress;
 	public List<string> charactersMet;
 	public string[] tileTypes;
 	public float[] playerPosition;
 	public List<string> inventory;
 
 	public SaveData(){
-		progress = new List<string> ();
+		progress = new List<int> ();
 		charactersMet = new List<string> ();
 		inventory = new List<string> ();
 		playerPosition = new float[3];

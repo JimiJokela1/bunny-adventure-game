@@ -16,7 +16,12 @@ public class MapGenerator : MonoBehaviour {
 	GameObject spriteForest1;
 
 	GameObject randomEvent;
+	GameObject storyEvent;
 	int tileMask;
+
+	GameObject randomEventMarker;
+	GameObject friendMarker;
+	GameObject questMarker;
 
 	public int levelSize = 100;
 	public int waterWidth = 20;
@@ -28,6 +33,7 @@ public class MapGenerator : MonoBehaviour {
 
 	public int randomEventAmount = 100;
 	Transform eventHolder;
+	Transform questEventHolder;
 
 
 	// Instance for singleton class, meaning there is only one of this object ever
@@ -42,6 +48,25 @@ public class MapGenerator : MonoBehaviour {
 		// References
 		tileHolder = GameObject.Find("TileHolder").transform;
 		eventHolder = GameObject.Find ("EventHolder").transform;
+		questEventHolder = GameObject.Find ("QuestEventHolder").transform;
+//		while (true) {
+//			if (TileHolder.Instance != null) {
+//				tileHolder = TileHolder.Instance.gameObject.transform;
+//				break;
+//			}
+//		}
+//		while (true) {
+//			if (EventHolder.Instance != null) {
+//				eventHolder = EventHolder.Instance.gameObject.transform;
+//				break;
+//			}
+//		}
+//		while (true) {
+//			if (QuestEventHolder.Instance != null) {
+//				questEventHolder = QuestEventHolder.Instance.gameObject.transform;
+//				break;
+//			}
+//		}
 
 		spriteMountain1 = Resources.Load ("Prefabs/sprite_mountain1") as GameObject;
 		spriteForest1 = Resources.Load ("Prefabs/sprite_forest1") as GameObject;
@@ -54,6 +79,11 @@ public class MapGenerator : MonoBehaviour {
 		tileDesert2 = Resources.Load ("Prefabs/Tile_desert2") as GameObject;
 
 		randomEvent = Resources.Load ("Prefabs/RandomEvent") as GameObject;
+		storyEvent = Resources.Load ("Prefabs/StoryEvent") as GameObject;
+
+		randomEventMarker = Resources.Load ("Prefabs/randomEventMarker") as GameObject;
+		questMarker = Resources.Load ("Prefabs/questLocationMarker") as GameObject;
+		friendMarker = Resources.Load ("Prefabs/friendHouseMarker") as GameObject;
 
 		terrainSprites = new List<GameObject> ();
 		eventList = new List<GameObject> ();
@@ -262,7 +292,7 @@ public class MapGenerator : MonoBehaviour {
 					if (Physics.Raycast (location, Vector3.down, out hit, 100f, tileMask)) {
 						string tileType = hit.collider.tag;
 						if (tileType != "tile_water1") {
-							GameObject temp = Instantiate (randomEvent, location, Quaternion.identity, eventHolder);
+							GameObject temp = Instantiate (randomEventMarker, location, Quaternion.identity, eventHolder);
 							eventList.Add (temp);
 							success = true;
 						}
@@ -270,6 +300,71 @@ public class MapGenerator : MonoBehaviour {
 				}
 			}
 		}
+
+		// place panda and courthouse
+		Vector3 pandaPos;
+		Vector3 courthousePos;
+		float landEdge = (levelSize - waterWidth * 2) / 2 + .5f;
+		float closeEdge = (levelSize - waterWidth * 2) / 3 + .5f;
+		int tries = 100;
+		while (tries > 0){
+			int randomSide = Random.Range (0, 4);
+			if (randomSide == 0) {
+				pandaPos = new Vector3 (Random.Range (-landEdge, landEdge), .5f, Random.Range(closeEdge, landEdge));
+				courthousePos = new Vector3 (Random.Range (-closeEdge / 2, closeEdge / 2), .5f, -closeEdge / 2);
+			} else if (randomSide == 1) {
+				pandaPos = new Vector3 (Random.Range(closeEdge, landEdge), .5f, Random.Range (-landEdge, landEdge));
+				courthousePos = new Vector3 (-closeEdge / 2, .5f, Random.Range (-closeEdge / 2, closeEdge / 2));
+			} else if (randomSide == 2) {
+				pandaPos = new Vector3 (Random.Range (-landEdge, landEdge), .5f, -Random.Range(closeEdge, landEdge));
+				courthousePos = new Vector3 (Random.Range (-closeEdge / 2, closeEdge / 2), .5f, closeEdge / 2);
+			} else {
+				pandaPos = new Vector3 (-Random.Range(closeEdge, landEdge), .5f, Random.Range (-landEdge, landEdge));
+				courthousePos = new Vector3 (closeEdge / 2, .5f, Random.Range (-closeEdge / 2, closeEdge / 2));
+			}
+			RaycastHit hit;
+			if (Physics.Raycast (pandaPos, Vector3.down, out hit, 100f, tileMask)) {
+				if (hit.collider.tag == "tile_mountain1") {
+					Debug.Log ("tries: " + tries);
+					// panda
+					GameObject pandaEvent = Instantiate (questMarker, pandaPos, Quaternion.identity, questEventHolder);
+					pandaEvent.GetComponent<EventTriggerer> ().storyEventName = "panda";
+					pandaEvent.GetComponent<SphereCollider> ().radius = 15f;
+
+					// courthouse 
+					GameObject courthouseEvent = Instantiate (questMarker, courthousePos, Quaternion.identity, questEventHolder);
+					courthouseEvent.GetComponent<EventTriggerer> ().storyEventName = "courthouse";
+
+					Debug.Log ("Placed panda and courthouse");
+					break;
+				}
+			}
+			tries--;
+		}
+
+		// place quests
+		Vector3 owlPos = new Vector3(Random.Range(-closeEdge / 2, closeEdge / 2), .5f, Random.Range(-closeEdge / 2, closeEdge / 2));
+		Vector3 unicornPos = new Vector3(Random.Range(-closeEdge, closeEdge), .5f, Random.Range(-closeEdge, closeEdge));
+		Vector3 guineapigPos = new Vector3(Random.Range(-closeEdge / 2, closeEdge / 2), .5f, Random.Range(-closeEdge / 2, closeEdge / 2));
+		Vector3 centaurPos = new Vector3(Random.Range(-closeEdge, closeEdge), .5f, Random.Range(-closeEdge, closeEdge));
+
+		GameObject owlEvent = Instantiate (friendMarker, owlPos, Quaternion.identity, questEventHolder);
+		owlEvent.GetComponent<EventTriggerer> ().storyEventName = "owl";
+		owlEvent.GetComponent<EventTriggerer> ().MakeAlwaysHidden ();
+		GameObject unicornEvent = Instantiate (questMarker, unicornPos, Quaternion.identity, questEventHolder);
+		unicornEvent.GetComponent<EventTriggerer> ().storyEventName = "unicorn";
+		unicornEvent.GetComponent<EventTriggerer> ().MakeAlwaysHidden ();
+		GameObject guineapigEvent = Instantiate (friendMarker, guineapigPos, Quaternion.identity, questEventHolder);
+		guineapigEvent.GetComponent<EventTriggerer> ().storyEventName = "david";
+		guineapigEvent.GetComponent<EventTriggerer> ().MakeAlwaysHidden ();
+		GameObject centaurEvent = Instantiate (questMarker, centaurPos, Quaternion.identity, questEventHolder);
+		centaurEvent.GetComponent<EventTriggerer> ().storyEventName = "centaur";
+		centaurEvent.GetComponent<EventTriggerer> ().MakeAlwaysHidden ();
+
+		unicornEvent.SetActive (false);
+		centaurEvent.SetActive (false);
+
+
 	}
 
 	public void LoadMap(string[] tiletags){

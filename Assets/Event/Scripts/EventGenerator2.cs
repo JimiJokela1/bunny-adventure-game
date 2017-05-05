@@ -39,7 +39,7 @@ public class EventGenerator2 : MonoBehaviour{
 		terrainPosition.Add (new Vector3(-10, 0, -10));
 		
 
-//		GenerateEvent ();
+		GenerateEvent ();
 	}
 
 	public void testi() {

@@ -40,7 +40,7 @@ public class Trail : MonoBehaviour
 	Point[] points = new Point[100];
 	int pointCnt = 0;
 
-	void Start ()
+	void Awake ()
 	{
 		trailObj = new GameObject("Trail");
 		trailObj.transform.parent = GameObject.FindGameObjectWithTag ("Player").transform;
