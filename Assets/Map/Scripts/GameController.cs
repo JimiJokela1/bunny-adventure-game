@@ -28,6 +28,10 @@ public class GameController : MonoBehaviour {
 	public const int GAMESTATE_STORYEVENT = 3;
 	public const int GAMESTATE_EXIT = 4;
 
+	float gameStateChangeTimer = 0f;
+	float gameStateChangeTime = 1f;
+	bool changingGameState = false;
+
 	public string eventTileType;
 	GameObject player;
 	ParticleSystem rainParticles;
@@ -120,27 +124,38 @@ public class GameController : MonoBehaviour {
 		spawnCloudsButton.gameObject.SetActive (false);
 		smoothMapButton.gameObject.SetActive (false);
 
+		changingGameState = true;
 		ChangeGameState (GAMESTATE_START);
 	}
 
 	void Update(){
-		HandleConsole ();
-
-		SkyLightUpdate ();
-		ChangeLight ();
-		RandomWeather ();
-
-		if (gameState == GAMESTATE_MAP && !timePaused) {
-			if (player.GetComponent<MapPlayer> ().camping == false) {
-				timeOfDay += Time.deltaTime * timeScale;
-				if (timeOfDay >= 24f) {
-					timeOfDay -= 24f;
-				} 
+		if (changingGameState) {
+			if (gameStateChangeTimer < gameStateChangeTime) {
+				gameStateChangeTimer += Time.deltaTime;
 			} else {
-				timeOfDay += Time.deltaTime * timeScale * 0.3f;
-				if (timeOfDay >= 24f) {
-					timeOfDay -= 24f;
-				} 
+				gameStateChangeTimer = 0f;
+				changingGameState = false;
+				ChangeGameState (GAMESTATE_STORYEVENT, scene: "scene_beginning");
+			}
+		} else {
+			HandleConsole ();
+
+			SkyLightUpdate ();
+			ChangeLight ();
+			RandomWeather ();
+
+			if (gameState == GAMESTATE_MAP && !timePaused) {
+				if (player.GetComponent<MapPlayer> ().camping == false) {
+					timeOfDay += Time.deltaTime * timeScale;
+					if (timeOfDay >= 24f) {
+						timeOfDay -= 24f;
+					} 
+				} else {
+					timeOfDay += Time.deltaTime * timeScale * 0.3f;
+					if (timeOfDay >= 24f) {
+						timeOfDay -= 24f;
+					} 
+				}
 			}
 		}
 	}
@@ -162,24 +177,27 @@ public class GameController : MonoBehaviour {
 				}
 
 				ChangeGameState (GAMESTATE_MAP);
-				ChangeGameState (GAMESTATE_STORYEVENT, scene: "scene_beginning");
+
 				break;
 
 			case GAMESTATE_MAP:
 				// Reactivate stuff
+				Debug.Log ("Active scene: " + SceneManager.GetActiveScene ().name);
+				if (SceneManager.GetActiveScene ().name != "scene_tilemap") {
+					Debug.Log ("Loading scene: scene_tilemap");
+					SceneManager.LoadScene ("scene_tilemap");
+				}
 				returnToMapButton.gameObject.SetActive (false);
 				foreach (GameObject o in mapCanvasObjects) {
 					o.SetActive (true);
 				}
 				SetWeather (weatherState);
 				directionalLight.gameObject.SetActive (true);
-				player.SetActive (true);
 				TileHolder.Instance.gameObject.SetActive (true);
 				EventHolder.Instance.gameObject.SetActive (true);
-				if (SceneManager.GetActiveScene ().name != "scene_tilemap") {
-					Debug.Log ("Loading scene: scene_tilemap");
-					SceneManager.LoadScene ("scene_tilemap");
-				}
+				player.SetActive (true);
+				player.GetComponent<MapPlayer> ().StopMoving ();
+				player.GetComponent<Rigidbody> ().velocity = Vector3.zero;
 				foreach (EventTriggerer eve in QuestEventHolder.Instance.GetComponentsInChildren<EventTriggerer>()) {
 					eve.ShowAfterEvent ();
 				}
@@ -206,15 +224,30 @@ public class GameController : MonoBehaviour {
 				console.gameObject.SetActive (false);
 
 				if (eventTriggerer != null) { // if call came from an event triggerer on the map
-					
+					string eventName = eventTriggerer.storyEventName;
 					// if changing from map, disable map stuff that will not be destroyed, but need to be hidden
 					if (oldGameState == GAMESTATE_MAP) {
 						HideMapStuff ();
 					}
-
 					returnToMapButton.gameObject.SetActive (true);
-					Debug.Log ("Loading scene: " + scene);
-					SceneManager.LoadScene ("scene_" + eventTriggerer.storyEventName);
+
+					if (eventName == "owl") {
+						if (GetComponent<Inventory>().GetInv().FindAll(FindUnicornDust).Count == 8){
+							eventName += "2";
+						}
+					}
+					if (eventName == "david") {
+						if (GetComponent<Inventory> ().GetInv ().Contains ("davids armor")) {
+							eventName += "2";
+						}
+					}
+					if (eventName == "courthouse") {
+						if (PlayerController.Instance.progress.Contains (PlayerController.PANDA)) {
+							eventName += "2";
+						}
+					}
+					Debug.Log ("Loading scene: scene_" + eventName);
+					SceneManager.LoadScene ("scene_" + eventName);
 
 				} else if (scene != null) { // if call came from console command
 					// if changing to tilemap or random event, there's a special case in ChangeGameState()
@@ -292,12 +325,12 @@ public class GameController : MonoBehaviour {
 		return gameState;
 	}
 
-	public void ActivateDialogue(){
-
-	}
-
-	public void DeActivateDialogue(){
-
+	private static bool FindUnicornDust(string itemName){
+		if (itemName == "Unicorn Dust") {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	void onGenerateButtonClick () {
@@ -321,11 +354,11 @@ public class GameController : MonoBehaviour {
 		if (player.GetComponent<MapPlayer> ().camping == false) {
 			player.GetComponent<MapPlayer> ().camping = true;
 			player.GetComponent<MapPlayer> ().StopMoving ();
-			campButton.gameObject.GetComponentInChildren<Text> ().text = "Pack up";
+//			campButton.gameObject.GetComponentInChildren<Text> ().text = "Pack up";
 			player.GetComponent<Camp> ().SetUpCamp ();
 		} else if (player.GetComponent<MapPlayer> ().camping == true) {
 			player.GetComponent<MapPlayer> ().camping = false;
-			campButton.gameObject.GetComponentInChildren<Text> ().text = "Set up camp";
+//			campButton.gameObject.GetComponentInChildren<Text> ().text = "Set up camp";
 			player.GetComponent<Camp> ().PackUpCamp ();
 		}
 	}

@@ -12,14 +12,13 @@ public class Inventory : MonoBehaviour {
 
 	void Awake(){
 		inventory = new List<string> ();
-	}
-
-	void Start () {
-		
 		inventoryBackground = GameObject.Find ("InventoryBackground");
 		inventoryBackground.SetActive (false);
 		inventoryItemPrefab = Resources.Load ("Prefabs/InventoryItem") as GameObject;
 		invItems = new List<GameObject> ();
+	}
+
+	void Start () {
 //		AddToInv ("item");
 //		AddToInv ("item");
 //		AddToInv ("item");
@@ -56,7 +55,7 @@ public class Inventory : MonoBehaviour {
 			tempItem.GetComponent<Text> ().text = item;
 			//			tempItem.transform.SetParent(inventoryBackground.transform);
 
-			location += new Vector2 (150, 0);
+			location += new Vector2 (250, 0);
 			if (location.x > inventoryBackground.GetComponent<RectTransform>().rect.width - 100) {
 				location = new Vector2 (50, location.y - 100);
 			}

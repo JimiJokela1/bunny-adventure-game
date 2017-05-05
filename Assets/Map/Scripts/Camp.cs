@@ -14,7 +14,7 @@ public class Camp : MonoBehaviour {
 	GameObject campFireTemp;
 	Transform player;
 
-	void Start(){
+	void Awake(){
 //		inventory = GameObject.Find ("Inventory");
 //		inventory.SetActive (false);
 		campFire = Resources.Load("Prefabs/FireParticles") as GameObject;

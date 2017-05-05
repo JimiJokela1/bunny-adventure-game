@@ -38,6 +38,8 @@ public class DialogueController : MonoBehaviour
 		imageFieldPlayer = GameObject.Find ("ImageFieldPlayer").GetComponent<Image> ();
 		ButtonDOption1 = (Button)GameObject.Find ("ButtonDOption1").GetComponent<Button> ();
 		ButtonDOption2 = (Button)GameObject.Find ("ButtonDOption2").GetComponent<Button> ();
+		ButtonDOption1.onClick.AddListener (() => OptionA ());
+		ButtonDOption2.onClick.AddListener (() => OptionB ());
 		//ButtonDOption1.GetComponentInChildren<Text>().text = "Scream";
 		//ButtonDOption2.GetComponentInChildren<Text>().text = "Hide";
 		//ButtonDOption1.gameObject.SetActive(false);

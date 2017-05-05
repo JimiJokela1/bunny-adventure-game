@@ -14,6 +14,8 @@ public class PlayerController : MonoBehaviour {
 		} else if (Instance != this) {
 			Destroy (gameObject);
 		}
+		progress = new List<int> ();
+		mapPlayer = gameObject.GetComponent<MapPlayer> ();
 	}
 
 	MapPlayer mapPlayer;
@@ -25,16 +27,12 @@ public class PlayerController : MonoBehaviour {
 	public const int ALLQUESTSDONE = 4;
 	public const int PANDA = 5;
 	public const int COURTHOUSE_FINAL = 6;
+	public const int DIPUTS_QUEST = 7;
+	public const int DAVID_QUEST = 8;
 
 	public List<int> progress;
 //	public List<string> charactersMet;
 //	public List<string> questsDone;
-
-	void Start(){
-		progress = new List<int> ();
-		mapPlayer = gameObject.GetComponent<MapPlayer> ();
-//		charactersMet = new List<string> ();
-	}
 
 	void Update(){
 		if (GameController.Instance.GetGameState () == GameController.GAMESTATE_MAP) {
