@@ -61,7 +61,8 @@ public class MapPlayer : MonoBehaviour{
 	/// Handles the controls: Checks if clicked on map.
 	/// </summary>
 	public void HandleControls () {
-		if (Input.GetAxis ("Action1") > 0.1f && GameController.Instance.mouseOverButton == false && camping == false && GameController.Instance.GetGameState() == GameController.GAMESTATE_MAP) {
+		if (Input.GetAxis ("Action1") > 0.1f && GameController.Instance.mouseOverButton == false 
+			&& camping == false && GameController.Instance.GetGameState() == GameController.GAMESTATE_MAP) {
 			if (controlCooldown == false && moving == false) {
 				Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
 				RaycastHit hit;
@@ -151,9 +152,9 @@ public class MapPlayer : MonoBehaviour{
 		slowMovementSpeed = originalMovementSpeed / 2f;
 		if (GameController.Instance.weatherState == "storm" && umbrella == false) {
 			movementSpeed = slowMovementSpeed / 2f;
-		} else if (tileType == "tile_mountain") {
+		} else if (tileType == "tile_mountain1") {
 			movementSpeed = slowMovementSpeed;
-		} else if (tileType == "tile_water") {
+		} else if (tileType == "tile_water1") {
 			movementSpeed = slowMovementSpeed / 2f;
 		} else {
 			movementSpeed = originalMovementSpeed;
