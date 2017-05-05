@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class ExitTrigger : MonoBehaviour {
+public class ExitTrigger : MonoBehaviour
+{
 
-	void OnTriggerEnter(Collider other) {
+	void OnTriggerEnter (Collider other)
+	{
 		Debug.Log ("EXIT TRIGGER");
 		switch (SceneManager.GetActiveScene ().name) {
 			case "scene_beginning":
