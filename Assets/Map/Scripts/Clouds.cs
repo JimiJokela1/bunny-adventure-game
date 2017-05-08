@@ -68,6 +68,9 @@ public class Clouds : MonoBehaviour {
 			}
 			if (stormCloudAlpha <= 0f && fadingStormCloudsOut == true) {
 				fadingStormCloudsOut = false;
+				foreach (GameObject o in stormClouds) {
+					Destroy (o);
+				}
 				stormClouds.Clear ();
 			}
 			if (stormCloudAlpha >= 1f && fadingStormCloudsIn) {
