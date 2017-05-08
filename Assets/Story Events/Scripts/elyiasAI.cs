@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class elyiasAI : MonoBehaviour {
-
+		//Ai for elyias patrol pattern
 
 		public Transform[] points;
 		private int destPoint = 0;
