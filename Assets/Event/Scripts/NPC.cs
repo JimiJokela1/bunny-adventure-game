@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using UnityEngine;
 
 public class NPC : MonoBehaviour {
-
+	//OBSOLETE
 	CanvasGroup canvasGroup;
 	Text textField;
 	Image imageField;

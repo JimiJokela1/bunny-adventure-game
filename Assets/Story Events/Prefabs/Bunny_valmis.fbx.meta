@@ -1,17 +1,19 @@
 fileFormatVersion: 2
-guid: 7518fd17600e8a04883058a25a7038ec
-timeCreated: 1493186038
+guid: 9fd36e72805ddfd4e89c647e36956d27
+timeCreated: 1494180569
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
     100000: //RootNode
+    100002: Camera
+    100004: Plane
     400000: //RootNode
-    2300000: //RootNode
-    3300000: //RootNode
+    400002: Camera
+    400004: Plane
+    2300000: Plane
+    3300000: Plane
     4300000: Plane
-    7400000: Default Take
-    9500000: //RootNode
   materials:
     importMaterials: 1
     materialName: 0
@@ -53,8 +55,8 @@ ModelImporter:
     useFileScale: 1
   tangentSpace:
     normalSmoothAngle: 60
-    normalImportMode: 2
-    tangentImportMode: 2
+    normalImportMode: 0
+    tangentImportMode: 3
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
@@ -74,7 +76,7 @@ ModelImporter:
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 2
+  animationType: 0
   humanoidOversampling: 1
   additionalBone: 0
   userData: 

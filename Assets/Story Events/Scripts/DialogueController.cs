@@ -61,7 +61,7 @@ public class DialogueController : MonoBehaviour
 	//dialogue triggers from the map, load text assets and pictures
 	public void DialogueTriggered (string name)
 	{
-		activeNPC = name;
+		activeNPC = name; //holds the name for later use
 		lineNumberNPC = 0;
 		lineNumberPlayer = 0;
 		Debug.Log (name + " dialogue");
@@ -78,7 +78,8 @@ public class DialogueController : MonoBehaviour
 	}
 
 	//load new text assets according to choise made
-	public void OptionTriggered (string name)
+	//textAssets names npcname_npc, npcname_player, npcname_options, npcnamea_npc (for option A) and so forth
+	public void OptionTriggered (string name) 
 	{
 		lineNumberNPC = 0;
 		lineNumberPlayer = 0;
@@ -99,6 +100,7 @@ public class DialogueController : MonoBehaviour
 		if (lineNumberPlayer < dialoguePlayer.Length) {
 			//Debug.Log (lineNumberPlayer + "   " + dialoguePlayer [lineNumberPlayer]);
 			//Debug.Log (lineNumberNPC + "   " + dialogueNPC [lineNumberNPC]);
+			//Check for ! in the textasset, which triggers forking of dialogue
 			if (dialoguePlayer [lineNumberPlayer].Equals("!")) {
 				Debug.Log ("option trigger");
 				options = Resources.Load<TextAsset> (activeNPC + "_options");
@@ -110,25 +112,25 @@ public class DialogueController : MonoBehaviour
 
 			}
 		}
-		//NPC PUHUU
+		//npc speaks
 		if (playerTurn == false && lineNumberNPC < dialogueNPC.Length) {
 			//Debug.Log (lineNumberNPC + "   " + dialogueNPC [lineNumberNPC]);
-			textFieldPlayer.text = "";
+			textFieldPlayer.text = ""; 
 			textFieldNPC.text = dialogueNPC [lineNumberNPC];
 			lineNumberNPC++;
 			if (lineNumberPlayer < dialoguePlayer.Length) {
 				playerTurn = true;
 			}
-
-		} else if (lineNumberNPC == dialogueNPC.Length && lineNumberPlayer == dialoguePlayer.Length) { //DIALOGI LOPPUU
+			//Dialogue ends
+		} else if (lineNumberNPC == dialogueNPC.Length && lineNumberPlayer == dialoguePlayer.Length) {
 			textFieldPlayer.text = "";
 			textFieldNPC.text = "";
 			imageFieldNPC.gameObject.SetActive (false);
 			imageFieldPlayer.gameObject.SetActive (false);
 			isDialogueOn = false;
 			eventPlayer.canMove = true;
-
-		} else if (lineNumberPlayer < dialoguePlayer.Length) {  //PELAAJA PUHUU
+			//Player speaks
+		} else if (lineNumberPlayer < dialoguePlayer.Length) {  
 			//Debug.Log (lineNumberPlayer + "   " + dialoguePlayer [lineNumberPlayer]);
 			textFieldNPC.text = "";
 			textFieldPlayer.text = dialoguePlayer [lineNumberPlayer];
@@ -142,7 +144,9 @@ public class DialogueController : MonoBehaviour
 
 	}
 
-
+	/// <summary>
+	/// Hides the UI
+	/// </summary>
 	public void HideUI ()
 	{
 		ButtonDOption1.gameObject.SetActive (false);
@@ -151,25 +155,33 @@ public class DialogueController : MonoBehaviour
 		imageFieldPlayer.gameObject.SetActive (false);
 
 	}
-
+	/// <summary>
+	/// Shows the UI
+	/// </summary>
 	public void ShowUI ()
 	{
 		imageFieldNPC.gameObject.SetActive (true);
 		imageFieldPlayer.gameObject.SetActive (true);
 	}
-	//hide option buttons
+	/// <summary>
+	/// Hides the option buttons
+	/// </summary>
 	public void HideButtons ()
 	{
 		ButtonDOption1.gameObject.SetActive (false);
 		ButtonDOption2.gameObject.SetActive (false);
 	}
-	//show option buttons
+	/// <summary>
+	/// Shows the option buttons
+	/// </summary>
 	public void ShowButtons ()
 	{
 		ButtonDOption1.gameObject.SetActive (true);
 		ButtonDOption2.gameObject.SetActive (true);
 	}
-
+	/// <summary>
+	/// Called when option A button is pressed
+	/// </summary>
 	public void OptionA ()
 	{
 		Debug.Log ("kutsu " + activeNPC + "a");
@@ -177,7 +189,9 @@ public class DialogueController : MonoBehaviour
 		HideButtons ();
 		option = false;
 	}
-
+	/// <summary>
+	/// Called when option B button is pressed
+	/// </summary>
 	public void OptionB ()
 	{
 		Debug.Log ("kutsu " + activeNPC + "b");
@@ -185,7 +199,7 @@ public class DialogueController : MonoBehaviour
 		HideButtons ();
 		option = false;
 	}
-
+	//OLD VERSION OF DIALOGUECONTROLLER
 	/// <summary>
 	/// Destroyes both buttons and loads dialogue 1
 	/// </summary>
