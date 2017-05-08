@@ -1,7 +1,6 @@
-Judge: “They are in prison because of their debts to Mr. Xummosde”
+Judge: “They are in prison because of their debts to Mr. Xummosde” 
 Judge: “Your parents”
-Judge: “Oh, right. Mr. Xummosde is a great businessman and philanthropist. He helped the whole town after the monster invasion. In fact, he is that gentleman over there”
-Xummosde: “Less staring, more working Judge!”
+Judge: “Oh, right. Mr. Xummosde is a great businessman and philanthropist. He helped the whole town after the monster invasion.”
 Judge: “With credit, debit or Gift cards to Varusteleka”
 Judge: “Then your parents will rot in the prison”
 Judge: “That can be arranged”
