@@ -58,6 +58,7 @@ public class GameController : MonoBehaviour {
 	Button spawnCloudsButton; // for testing
 	Button smoothMapButton; // for testing
 	Button saveButton; // works I guess
+	Button quitButton;
 	Button returnToMapButton;
 	Button umbrellaButton;
 	Button campButton;
@@ -86,6 +87,8 @@ public class GameController : MonoBehaviour {
 
 		saveButton = GameObject.Find ("SaveButton").GetComponent<Button> ();
 		saveButton.onClick.AddListener (() => SaveGame ());
+		quitButton = GameObject.Find ("QuitButton").GetComponent<Button> ();
+		quitButton.onClick.AddListener (() => QuitGame ());
 		console = GameObject.Find ("Console").GetComponent<InputField> ();
 		console.onEndEdit.AddListener ((value) => ConsoleInput(value));
 		console.gameObject.SetActive (false);
@@ -116,13 +119,14 @@ public class GameController : MonoBehaviour {
 		mapCanvasObjects.Add (saveButton.gameObject);
 
 //		mapCanvasObjects.Add (generateButton.gameObject);
-		mapCanvasObjects.Add (eventTestButton.gameObject);
+//		mapCanvasObjects.Add (eventTestButton.gameObject);
 //		mapCanvasObjects.Add (spawnCloudsButton.gameObject);
 //		mapCanvasObjects.Add (smoothMapButton.gameObject);
 
 		generateButton.gameObject.SetActive (false);
 		spawnCloudsButton.gameObject.SetActive (false);
 		smoothMapButton.gameObject.SetActive (false);
+		eventTestButton.gameObject.SetActive (false);
 
 		ChangeGameState (GAMESTATE_START);
 	}
@@ -207,15 +211,15 @@ public class GameController : MonoBehaviour {
 			case GAMESTATE_RANDOMEVENT:
 				console.gameObject.SetActive (false);
 				if (eventTriggerer != null) {
-					returnToMapButton.gameObject.SetActive (true);
 					eventTileType = eventTriggerer.GetEventTileType ();
-					if (oldGameState == GAMESTATE_MAP) {
-						HideMapStuff ();
-					}
-					if (SceneManager.GetActiveScene ().name != "scene_random") {
-						Debug.Log ("Loading scene: " + scene);
-						SceneManager.LoadScene ("scene_random");
-					}
+				}
+				returnToMapButton.gameObject.SetActive (true);
+				if (oldGameState == GAMESTATE_MAP) {
+					HideMapStuff ();
+				}
+				if (SceneManager.GetActiveScene ().name != "scene_random") {
+					Debug.Log ("Loading scene: " + scene);
+					SceneManager.LoadScene ("scene_random");
 				}
 				break;
 
@@ -674,6 +678,10 @@ public class GameController : MonoBehaviour {
 			Debug.Log (e.ToString ());
 			return false;
 		}
+	}
+
+	void QuitGame(){
+		Application.Quit ();
 	}
 }
 

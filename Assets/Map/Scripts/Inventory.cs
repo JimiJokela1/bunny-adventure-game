@@ -32,10 +32,18 @@ public class Inventory : MonoBehaviour {
 		inventory.Add (itemName);
 	}
 
+	/// <summary>
+	/// Gets the inventory.
+	/// </summary>
+	/// <returns>The inventory List<string>.</returns>
 	public List<string> GetInv(){
 		return inventory;
 	}
 
+	/// <summary>
+	/// Loads the inventory from a save file.
+	/// </summary>
+	/// <param name="inv">Inv.</param>
 	public void LoadInv(List<string> inv){
 		foreach (string item in inv) {
 			if (item != null) {
@@ -44,6 +52,9 @@ public class Inventory : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Shows the inventory and lists the items.
+	/// </summary>
 	public void ShowInv(){
 		inventoryBackground.SetActive (true);
 		Vector2 location = new Vector2(50, -100);
@@ -63,6 +74,9 @@ public class Inventory : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Hides the inventory.
+	/// </summary>
 	public void HideInv(){
 		foreach (GameObject invItem in invItems) {
 			Destroy (invItem);
