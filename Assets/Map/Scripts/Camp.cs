@@ -21,6 +21,9 @@ public class Camp : MonoBehaviour {
 		player = GameObject.FindGameObjectWithTag ("Player").transform;
 	}
 
+	/// <summary>
+	/// Sets up camp.
+	/// </summary>
 	public void SetUpCamp(){
 		// Activate all the things
 		Camera.main.GetComponent<CameraController>().CampZoom();
@@ -30,6 +33,9 @@ public class Camp : MonoBehaviour {
 			
 	}
 
+	/// <summary>
+	/// Packs up camp.
+	/// </summary>
 	public void PackUpCamp(){
 		// Deactivate all the things
 		Camera.main.GetComponent<CameraController> ().Unzoom ();
@@ -38,9 +44,5 @@ public class Camp : MonoBehaviour {
 		if (campFireTemp != null) {
 			Destroy (campFireTemp);
 		}
-	}
-
-	void OnInventoryButtonClick(){
-//		inventory.SetActive (true);
 	}
 }

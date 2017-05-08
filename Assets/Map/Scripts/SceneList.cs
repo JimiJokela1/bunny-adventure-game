@@ -5,11 +5,14 @@ public enum Scenes
 	scene_tilemap = 0,
 	scene_beginning = 1,
 	scene_courthouse = 2,
-	scene_panda = 3,
-	scene_unicorn = 4,
-	scene_owl = 5,
-	scene_eylias = 6,
-	scene_david = 7,
-	scene_random = 8
+	scene_owl = 3,
+	scene_owl2 = 4,
+	scene_unicorn = 5,
+	scene_david = 6,
+	scene_david2 = 7,
+	scene_eylias = 8,
+	scene_panda = 9,
+	scene_courthouse2 = 10,
+	scene_random = 11
 }
 

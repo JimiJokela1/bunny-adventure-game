@@ -42,10 +42,18 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Add and item to the inventory.
+	/// </summary>
+	/// <param name="itemName">Item name.</param>
 	public void AddToInv(string itemName){
 		GameController.Instance.GetComponent<Inventory> ().AddToInv (itemName);
 	}
 
+	/// <summary>
+	/// Adds to the progress list and makes the appropriate quest events hidden or visible.
+	/// </summary>
+	/// <param name="newProgress">New progress item, see consts.</param>
 	public void AddToProgress(int newProgress){
 		progress.Add (newProgress);
 		if (newProgress == TUTORIAL) {
@@ -62,7 +70,19 @@ public class PlayerController : MonoBehaviour {
 					o.GetComponent<EventTriggerer> ().MakeAlwaysVisible ();
 				}
 			}
-		} else if (newProgress == UNICORN) {
+		} else if (newProgress == DIPUTS_QUEST) {
+			foreach (GameObject o in GameObject.FindGameObjectsWithTag("QuestEventTrigger")) {
+				if (o.GetComponent<EventTriggerer> ().storyEventName == "unicorn") {
+					o.GetComponent<EventTriggerer> ().MakeAlwaysVisible ();
+				}
+			}
+		}  else if (newProgress == DAVID_QUEST) {
+			foreach (GameObject o in GameObject.FindGameObjectsWithTag("QuestEventTrigger")) {
+				if (o.GetComponent<EventTriggerer> ().storyEventName == "unicorn") {
+					o.GetComponent<EventTriggerer> ().MakeAlwaysVisible ();
+				}
+			}
+		}  else if (newProgress == UNICORN) {
 			foreach (GameObject o in GameObject.FindGameObjectsWithTag("QuestEventTrigger")) {
 				if (o.GetComponent<EventTriggerer> ().storyEventName == "unicorn") {
 					o.GetComponent<EventTriggerer> ().MakeAlwaysHidden ();
