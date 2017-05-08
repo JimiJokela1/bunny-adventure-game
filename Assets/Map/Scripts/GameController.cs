@@ -58,6 +58,7 @@ public class GameController : MonoBehaviour {
 	Button spawnCloudsButton; // for testing
 	Button smoothMapButton; // for testing
 	Button saveButton; // works I guess
+	Button quitButton;
 	Button returnToMapButton;
 	Button umbrellaButton;
 	Button campButton;
@@ -86,6 +87,8 @@ public class GameController : MonoBehaviour {
 
 		saveButton = GameObject.Find ("SaveButton").GetComponent<Button> ();
 		saveButton.onClick.AddListener (() => SaveGame ());
+		quitButton = GameObject.Find ("QuitButton").GetComponent<Button> ();
+		quitButton.onClick.AddListener (() => QuitGame ());
 		console = GameObject.Find ("Console").GetComponent<InputField> ();
 		console.onEndEdit.AddListener ((value) => ConsoleInput(value));
 		console.gameObject.SetActive (false);
@@ -674,6 +677,10 @@ public class GameController : MonoBehaviour {
 			Debug.Log (e.ToString ());
 			return false;
 		}
+	}
+
+	void QuitGame(){
+		Application.Quit ();
 	}
 }
 
